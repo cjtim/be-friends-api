@@ -15,11 +15,12 @@ func Route(r *fiber.App) {
 		return c.SendString("pong")
 	})
 	// r.Post("/line/webhook", line_controllers.Webhook)
-	usersRouteSetup(r)
+	authRouteSetup(r)
 }
 
-func usersRouteSetup(r *fiber.App) {
-	usersRoute := r.Group("/users")
-	usersRoute.Get("/me", middlewares.GetJWTMiddleware, users.Me)
-	usersRoute.Post("/login", users.Login)
+func authRouteSetup(r *fiber.App) {
+	authRoute := r.Group("/auth")
+	authRoute.Get("/me", middlewares.GetJWTMiddleware, users.Me)
+	authRoute.Get("/line", users.LoginLine)
+	authRoute.Get("/line/callback", users.LineCallback)
 }

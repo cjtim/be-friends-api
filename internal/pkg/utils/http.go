@@ -20,7 +20,7 @@ type HttpReq struct {
 	BodyBytes []byte
 }
 
-func doRequest(req *http.Request) (resp *http.Response, body []byte, err error) {
+func DoRequest(req *http.Request) (resp *http.Response, body []byte, err error) {
 	client := &http.Client{Timeout: 15 * time.Second}
 	resp, err = client.Do(req)
 	if err != nil {
@@ -79,5 +79,5 @@ func Http(httpReq *HttpReq) (*http.Response, []byte, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	return doRequest(req)
+	return DoRequest(req)
 }

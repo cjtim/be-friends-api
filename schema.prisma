@@ -7,15 +7,27 @@ datasource db {
 generator db {
     provider = "go run github.com/prisma/prisma-client-go"
     // set the output folder and package name
-    output           = "./repository"
-    package          = "repository"
+    output   = "./repository"
+    package  = "repository"
 }
 
-model User {
-    id        String   @default(cuid()) @id
-    name      String
+model Users {
+    id            String   @id @default(cuid())
+    name          String
     loginMethodId Int
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
 }
 
+model LoginMethods {
+    id   Int    @id @default(autoincrement())
+    name String
+}
+
+model LineUsers {
+    lineUid    String   @id
+    name       String
+    profilePic String?
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+}

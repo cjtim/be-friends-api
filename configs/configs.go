@@ -20,6 +20,11 @@ type ConfigType struct {
 	JWTSecret  string `env:"JWT_SECRET" envDefault:"test"`
 	JWTCookies string `env:"JWT_COOKIES" envDefault:"authToken"`
 
+	LineLoginCallback string `env:"LINE_CALLBACK_URL" envDefault:"http://localhost:8080/auth/line/callback"`
+	LineClientID      string `env:"LINE_CLIENT_ID" envDefault:""`
+	LineSecretID      string `env:"LINE_SECRET_ID" envDefault:""`
+
+	LoginSuccessURL         string `env:"LOGIN_SUCCESS_URL" envDefault:"http://localhost:3000/user"`
 	LineAPIBroadcast        string `envDefault:"https://api.line.me/v2/bot/message/broadcast"`
 	LineAPIReply            string `envDefault:"https://api.line.me/v2/bot/message/reply"`
 	AirVisualAPINearestCity string `envDefault:"http://api.airvisual.com/v2/nearest_city"`
