@@ -1,12 +1,15 @@
 package auth
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 	"net/url"
 
 	"github.com/cjtim/be-friends-api/configs"
 	"github.com/cjtim/be-friends-api/internal/pkg/line"
 	"github.com/cjtim/be-friends-api/internal/pkg/users"
+	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -59,6 +62,34 @@ func LineCallback(c *fiber.Ctx) error {
 		Name:  configs.Config.JWTCookies,
 		Value: t,
 	})
+
+	// BUG new user always create at login
+	createdUser, err := repository.DB.Users.CreateOne(
+		repository.Users.Name.Set(profile.Name),
+		repository.Users.LoginMethodID.Set(2),
+	).Exec(context.Background())
+
+	if err != nil {
+		return err
+	}
+
+	createdLineUser, err := repository.DB.LineUsers.UpsertOne(
+		repository.LineUsers.LineUId.Equals(profile.LineUid),
+	).Create(repository.LineUsers.LineUId.Set(profile.LineUid),
+		repository.LineUsers.Name.Set(profile.Name),
+		repository.LineUsers.User.Link(
+			repository.Users.ID.Equals(createdUser.ID),
+		),
+		repository.LineUsers.ProfilePic.Set(profile.Picture),
+	).Update(
+		repository.LineUsers.ProfilePic.Set(profile.Picture),
+	).Exec(context.Background())
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(createdLineUser)
 
 	return c.Redirect(configs.Config.LoginSuccessURL)
 }
