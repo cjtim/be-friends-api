@@ -26,11 +26,11 @@ model LoginMethods {
 }
 
 model LineUsers {
-    lineUid    String   @id
+    lineUid    String   @id @unique
     name       String
     profilePic String?
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
-    userId     String
+    userId     String   @unique
     user       Users    @relation(fields: [userId], references: [id])
 }

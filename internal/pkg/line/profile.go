@@ -51,5 +51,4 @@ func GetProfile(token string) (LineProfile, error) {
 	profile := LineProfile{}
 	err = json.Unmarshal(body, &profile)
 	return profile, err
-
 }
