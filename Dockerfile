@@ -11,6 +11,8 @@ COPY . .
 ARG GOARCH
 ARG GOOS=linux
 ARG CGO_ENABLED=0
+
+RUN go run github.com/prisma/prisma-client-go generate
 # Build the binary.
 RUN go build -o main main.go
 
