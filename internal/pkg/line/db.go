@@ -21,7 +21,9 @@ func (p *LineProfile) CreateLineUser() error {
 	if newUser {
 		createdUser, err = r.DB.Users.CreateOne(
 			r.Users.Name.Set(p.Name),
-			r.Users.LoginMethodID.Set(2),
+			r.Users.LoginMethods.Link(
+				r.LoginMethods.ID.Equals(2),
+			),
 		).Exec(ctx)
 		if err != nil {
 			return err

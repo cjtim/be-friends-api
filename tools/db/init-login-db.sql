@@ -1,4 +1,3 @@
-
 -- CreateTable
 CREATE TABLE "Users" (
 	"id" TEXT NOT NULL,
@@ -17,6 +16,9 @@ CREATE TABLE "LoginMethods" (
 
 	CONSTRAINT "LoginMethods_pkey" PRIMARY KEY ("id")
 );
+
+-- AddForeignKey
+ALTER TABLE "Users" ADD CONSTRAINT "Users_loginMethodId_fkey" FOREIGN KEY ("loginMethodId") REFERENCES "LoginMethods"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- CreateTable
 CREATE TABLE "LineUsers" (
@@ -39,5 +41,17 @@ CREATE UNIQUE INDEX "LineUsers_userId_key" ON "LineUsers"("userId");
 -- AddForeignKey
 ALTER TABLE "LineUsers" ADD CONSTRAINT "LineUsers_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
--- MOCK DATA
-insert into "LoginMethods" (id, name) values (1, 'JWT'), (2, 'Line')
+-- CreateTable
+CREATE TABLE "JwtUsers" (
+    "id" SERIAL NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "JwtUsers_pkey" PRIMARY KEY ("id")
+);
+
+-- AddForeignKey
+ALTER TABLE "JwtUsers" ADD CONSTRAINT "JwtUsers_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

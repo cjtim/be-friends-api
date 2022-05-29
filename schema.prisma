@@ -12,25 +12,44 @@ generator db {
 }
 
 model Users {
-    id            String      @id @default(cuid())
+    id            String       @id @default(cuid())
     name          String
     loginMethodId Int
-    createdAt     DateTime    @default(now())
-    updatedAt     DateTime    @updatedAt
     LineUsers     LineUsers[]
+    JwtUsers      JwtUsers[]
+    loginMethods  LoginMethods @relation(fields: [loginMethodId], references: [id])
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model LoginMethods {
     id   Int    @id @default(autoincrement())
     name String
+
+    Users Users[]
+}
+
+model JwtUsers {
+    id       Int    @id @default(autoincrement())
+    email    String
+    password String
+
+    Users  Users  @relation(fields: [userId], references: [id])
+    userId String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model LineUsers {
-    lineUid    String   @id @unique
+    lineUid    String  @id @unique
     name       String
     profilePic String?
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
-    userId     String   @unique
-    user       Users    @relation(fields: [userId], references: [id])
+
+    userId String @unique
+    user   Users  @relation(fields: [userId], references: [id])
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
