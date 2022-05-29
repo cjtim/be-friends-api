@@ -59,18 +59,12 @@ func InitZap() *zap.Logger {
 		w,
 		errorFatalLevel,
 	)
-	// discordErrStdout := zapcore.NewCore(
-	// 	zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
-	// 	zapcore.AddSync(&discord.DiscordZapAddSync{}),
-	// 	errorFatalLevel,
-	// )
 	// tee core
 	core := zapcore.NewTee(
 		infoStdout,
 		errStdout,
 		saveInfoStdout,
 		saveErrStdout,
-		// discordErrStdout,
 	)
 
 	// finally construct the logger with the tee core

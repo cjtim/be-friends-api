@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/cjtim/be-friends-api/internal/app/controllers/users"
+	"github.com/cjtim/be-friends-api/internal/app/controllers/auth"
 	"github.com/cjtim/be-friends-api/internal/app/middlewares"
 	"github.com/gofiber/fiber/v2"
 )
@@ -20,7 +20,7 @@ func Route(r *fiber.App) {
 
 func authRouteSetup(r *fiber.App) {
 	authRoute := r.Group("/auth")
-	authRoute.Get("/me", middlewares.GetJWTMiddleware, users.Me)
-	authRoute.Get("/line", users.LoginLine)
-	authRoute.Get("/line/callback", users.LineCallback)
+	authRoute.Get("/me", middlewares.GetJWTMiddleware, auth.Me)
+	authRoute.Get("/line", auth.LoginLine)
+	authRoute.Get("/line/callback", auth.LineCallback)
 }

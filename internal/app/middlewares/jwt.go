@@ -8,7 +8,7 @@ import (
 
 var GetJWTMiddleware = func(c *fiber.Ctx) error {
 	jwt := c.Cookies(configs.Config.JWTCookies)
-	c.Request().Header.Add("Authorization", "Bearer "+jwt)
+	c.Request().Header.Add(configs.AuthorizationHeader, "Bearer "+jwt)
 	return jwtware.New(jwtware.Config{
 		SigningKey: []byte(configs.Config.JWTSecret),
 	})(c)
