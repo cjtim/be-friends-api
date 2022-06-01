@@ -23,16 +23,18 @@ func realMain() int {
 	defer logger.Sync()
 	zap.ReplaceGlobals(logger)
 
-	err := repository.CreateConnection()
+	db, err := repository.Connect()
 	if err != nil {
 		return 1
 	}
+	repository.DB = db
 
 	app := startServer()
 	setupCloseHandler(app)
 
 	listen := fmt.Sprintf(":%d", configs.Config.Port)
 	if err := app.Listen(listen); err != nil {
+		repository.DB.Close()
 		zap.L().Error("fiber start error", zap.Error(err))
 		return 1
 	}
@@ -58,7 +60,7 @@ func setupCloseHandler(app *fiber.App) {
 	go func() {
 		<-c
 		zap.L().Info("Got SIGTERM, terminating program...")
-		// repository.Client.Disconnect()
+		repository.DB.Close()
 		app.Server().Shutdown()
 	}()
 }

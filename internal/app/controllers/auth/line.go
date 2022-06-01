@@ -2,31 +2,18 @@ package auth
 
 import (
 	"net/http"
-	"net/url"
 
 	"github.com/cjtim/be-friends-api/configs"
 	"github.com/cjtim/be-friends-api/internal/pkg/line"
 	"github.com/cjtim/be-friends-api/internal/pkg/users"
+	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
 )
 
 // LoginLine - GET line login url
 func LoginLine(c *fiber.Ctx) error {
-	url := http.Request{
-		URL: &url.URL{
-			Scheme: "https",
-			Host:   "access.line.me",
-			Path:   "/oauth2/v2.1/authorize",
-		},
-	}
-	q := url.URL.Query()
-	q.Add("state", "12345abcde")
-	q.Add("scope", "profile openid")
-	q.Add("response_type", "code")
-	q.Add("redirect_uri", configs.Config.LineLoginCallback)
-	q.Add("client_id", configs.Config.LineClientID)
-	url.URL.RawQuery = q.Encode()
-	return c.Status(http.StatusOK).SendString(url.URL.String())
+	url := line.GetLoginURL()
+	return c.Status(http.StatusOK).SendString(url)
 }
 
 // LineCallback - Users being redirect here to register with us
@@ -47,24 +34,25 @@ func LineCallback(c *fiber.Ctx) error {
 		return err
 	}
 
-	// 2. Create JWT
-	userInfo := users.User{
-		ID:            profile.LineUid,
-		Name:          profile.Name,
-		ProfilePic:    profile.Picture,
-		LoginMethodID: 2,
+	// 2. Update database
+	userDB, err := profile.CreateLineUser()
+	if err != nil {
+		return err
 	}
-	_, _, cookie, err := userInfo.GetNewToken()
+
+	// 3. Create JWT
+	userInfo := repository.Users{
+		ID:         userDB.ID,
+		Name:       profile.Name,
+		Email:      userDB.Email,
+		LineUid:    userDB.LineUid,
+		PictureURL: userDB.PictureURL,
+	}
+	_, _, cookie, err := users.GetNewToken(&userInfo)
 	if err != nil {
 		return err
 	}
 	c.Cookie(cookie)
-
-	// 3. Update database
-	err = profile.CreateLineUser()
-	if err != nil {
-		return err
-	}
 
 	return c.Redirect(configs.Config.LoginSuccessURL)
 }

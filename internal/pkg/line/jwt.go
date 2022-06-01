@@ -18,6 +18,24 @@ type LineToken struct {
 	TokenType    string `json:"token_type"`
 }
 
+func GetLoginURL() string {
+	url := http.Request{
+		URL: &url.URL{
+			Scheme: "https",
+			Host:   "access.line.me",
+			Path:   "/oauth2/v2.1/authorize",
+		},
+	}
+	q := url.URL.Query()
+	q.Add("state", "12345abcde")
+	q.Add("scope", "profile openid")
+	q.Add("response_type", "code")
+	q.Add("redirect_uri", configs.Config.LineLoginCallback)
+	q.Add("client_id", configs.Config.LineClientID)
+	url.URL.RawQuery = q.Encode()
+	return url.URL.String()
+}
+
 func GetJWT(code string) (string, error) {
 	resp, err := http.PostForm("https://api.line.me/oauth2/v2.1/token", url.Values{
 		"grant_type":    {"authorization_code"},
