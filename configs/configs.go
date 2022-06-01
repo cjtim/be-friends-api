@@ -22,7 +22,7 @@ type ConfigType struct {
 
 	DATABASE_URL string `env:"DATABASE_URL" envDefault:""`
 
-	LineLoginCallback string `env:"LINE_CALLBACK_URL" envDefault:"http://localhost:8080/auth/line/callback"`
+	LineLoginCallback string `env:"LINE_CALLBACK_URL" envDefault:"http://localhost:8080/api/v1/auth/line/callback"`
 	LineClientID      string `env:"LINE_CLIENT_ID" envDefault:""`
 	LineSecretID      string `env:"LINE_SECRET_ID" envDefault:""`
 

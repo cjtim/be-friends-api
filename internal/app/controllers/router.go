@@ -8,18 +8,17 @@ import (
 
 // Route for all api request
 func Route(r *fiber.App) {
-	r.Get("/", func(c *fiber.Ctx) error {
+	r.Get("/api/v1", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"msg": "Hello, world"})
 	})
-	r.Get("/health", func(c *fiber.Ctx) error {
+	r.Get("/api/v1/health", func(c *fiber.Ctx) error {
 		return c.SendString("pong")
 	})
-	// r.Post("/line/webhook", line_controllers.Webhook)
 	authRouteSetup(r)
 }
 
 func authRouteSetup(r *fiber.App) {
-	authRoute := r.Group("/auth")
+	authRoute := r.Group("/api/v1/auth")
 	authRoute.Get("/me", middlewares.GetJWTMiddleware, auth.Me)
 	authRoute.Get("/line", auth.LoginLine)
 	authRoute.Get("/line/callback", auth.LineCallback)
