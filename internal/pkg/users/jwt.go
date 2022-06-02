@@ -5,7 +5,6 @@ import (
 
 	"github.com/cjtim/be-friends-api/configs"
 	"github.com/cjtim/be-friends-api/repository"
-	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -13,7 +12,7 @@ var (
 	TOKEN_EXPIRE = time.Hour * 72
 )
 
-func GetNewToken(u *repository.Users) (*jwt.Token, string, *fiber.Cookie, error) {
+func GetNewToken(u *repository.Users) (*jwt.Token, string, error) {
 	// Create the Claims
 	claims := jwt.MapClaims{
 		"id":          u.ID,
@@ -29,10 +28,7 @@ func GetNewToken(u *repository.Users) (*jwt.Token, string, *fiber.Cookie, error)
 	// Generate encoded token and send it as response.
 	t, err := token.SignedString([]byte(configs.Config.JWTSecret))
 	if err != nil {
-		return token, "", nil, err
+		return token, "", err
 	}
-	return token, t, &fiber.Cookie{
-		Name:  configs.Config.JWTCookies,
-		Value: t,
-	}, err
+	return token, t, err
 }

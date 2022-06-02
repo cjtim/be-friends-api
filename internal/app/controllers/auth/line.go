@@ -3,7 +3,6 @@ package auth
 import (
 	"net/http"
 
-	"github.com/cjtim/be-friends-api/configs"
 	"github.com/cjtim/be-friends-api/internal/pkg/line"
 	"github.com/cjtim/be-friends-api/internal/pkg/users"
 	"github.com/cjtim/be-friends-api/repository"
@@ -48,11 +47,10 @@ func LineCallback(c *fiber.Ctx) error {
 		LineUid:    userDB.LineUid,
 		PictureURL: userDB.PictureURL,
 	}
-	_, _, cookie, err := users.GetNewToken(&userInfo)
+	_, jwtToken, err := users.GetNewToken(&userInfo)
 	if err != nil {
 		return err
 	}
-	c.Cookie(cookie)
 
-	return c.Redirect(configs.Config.LoginSuccessURL)
+	return c.Status(http.StatusOK).SendString(jwtToken)
 }

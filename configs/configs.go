@@ -26,7 +26,6 @@ type ConfigType struct {
 	LineClientID      string `env:"LINE_CLIENT_ID" envDefault:""`
 	LineSecretID      string `env:"LINE_SECRET_ID" envDefault:""`
 
-	LoginSuccessURL         string `env:"LOGIN_SUCCESS_URL" envDefault:"http://localhost:3000/user"`
 	LineAPIBroadcast        string `envDefault:"https://api.line.me/v2/bot/message/broadcast"`
 	LineAPIReply            string `envDefault:"https://api.line.me/v2/bot/message/reply"`
 	AirVisualAPINearestCity string `envDefault:"http://api.airvisual.com/v2/nearest_city"`
