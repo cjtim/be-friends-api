@@ -6,12 +6,11 @@ replicaCount: 1
 
 image:
   repository: ghcr.io/cjtim/be-friends-api
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
-imagePullSecrets:
-  - name: ghcr.io
+imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
@@ -21,11 +20,9 @@ extraEnvs:
   - name: LINE_SECRET_ID
     value: 
   - name: LINE_CALLBACK_URL
-    value: http://localhost:8080/auth/line/callback
-  - name: LOGIN_SUCCESS_URL
-    value: http://localhost:3000/user
+    value: https://public-fe-url/user/line/callback
   - name: DATABASE_URL
-    value: 
+    value: postgresql://user:password@url:5432/database?sslmode=disable
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -56,18 +53,18 @@ service:
   port: 80
 
 ingress:
-  enabled: true
+  enabled: false
   className: "nginx"
   annotations:
     # kubernetes.io/ingress.class: nginx
-    kubernetes.io/tls-acme: "true"
+    # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: be-friends.cjtim.com
+    - host: example.com
       paths:
         - path: /api
           pathType: Prefix
   tls:
-    - secretName: wildcard-cjtim-com
+  # - secretName: example-tls
   #    hosts:
   #      - chart-example.local
 
