@@ -2,7 +2,6 @@ name: Release
 
 on:
   workflow_dispatch:
-
   push:
     tags:
       - "**"
@@ -43,7 +42,7 @@ jobs:
           push: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
           tags: |
             ghcr.io/${{ github.repository }}:${{ github.sha }}
-            ghcr.io/${{ github.repository }}:${GITHUB_REF_NAME}
+            ghcr.io/${{ github.repository }}:${{ github.ref_name }}
             ghcr.io/${{ github.repository }}:latest
 
   goreleaser:
@@ -89,10 +88,10 @@ jobs:
         with:
           version: v3.8.1
       
-      # - run: |
-      #     echo "TAG: ${GITHUB_REF_NAME}"
-      #     sed -i "s/version:.*/version: ${GITHUB_REF_NAME}/" helm/Chart.yaml
-      #     sed -i "s/appVersion:.*/appVersion: \"${GITHUB_REF_NAME}\"/" helm/Chart.yaml
+      - run: |
+          echo "TAG: ${GITHUB_REF_NAME}"
+          sed -i "s/version:.*/version: ${GITHUB_REF_NAME}/" helm/Chart.yaml
+          sed -i "s/appVersion:.*/appVersion: \"${GITHUB_REF_NAME}\"/" helm/Chart.yaml
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.4.0
