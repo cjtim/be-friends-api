@@ -87,6 +87,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
+          persist-credentials: false
           fetch-depth: 0
           path: gh-pages
 
@@ -97,15 +98,18 @@ jobs:
           sed -i "s/appVersion:.*/appVersion: \"${GITHUB_REF_NAME}\"/" helm/Chart.yaml
 
           helm package helm --destination ../gh-pages
+          helm repo index ../gh-pages --url https://cjtim.github.io/be-friends-api
 
-          cd ../gh-pages
-          helm repo index . --url https://cjtim.github.io/be-friends-api
+      - run: ../gh-pages
 
       - name: Configure Git
         run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-
-      - name: Commit files
-        run: |
+          git config --local user.name "$GITHUB_ACTOR"
+          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git commit -m "Update helm chart ${GITHUB_REF_NAME}" -a
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.PUSH_PAT }}
+          branch: gh-pages
