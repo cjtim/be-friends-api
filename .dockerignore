@@ -1,5 +1,0 @@
-**/*.db*
-**/*.env
-**/*.log
-**/*.env
-**/repository/*_gen.go
