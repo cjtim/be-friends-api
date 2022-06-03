@@ -7,8 +7,8 @@ import (
 	"syscall"
 
 	"github.com/cjtim/be-friends-api/configs"
-	controller "github.com/cjtim/be-friends-api/internal/app/controllers"
-	"github.com/cjtim/be-friends-api/internal/app/middlewares"
+	"github.com/cjtim/be-friends-api/handlers"
+	"github.com/cjtim/be-friends-api/handlers/middlewares"
 	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
@@ -48,7 +48,7 @@ func startServer() *fiber.App {
 	})
 	app.Use(middlewares.Cors())
 	app.Use(middlewares.RequestLog())
-	controller.Route(app) // setup router path
+	handlers.Route(app) // setup router path
 	return app
 }
 
