@@ -93,6 +93,7 @@ jobs:
 
       - run: |
           cd be-friends-api
+          echo ${PWD}
           echo "TAG: ${GITHUB_REF_NAME}"
           sed -i "s/version:.*/version: ${GITHUB_REF_NAME}/" helm/Chart.yaml
           sed -i "s/appVersion:.*/appVersion: \"${GITHUB_REF_NAME}\"/" helm/Chart.yaml
@@ -100,7 +101,9 @@ jobs:
           helm package helm --destination ../gh-pages
           helm repo index ../gh-pages --url https://cjtim.github.io/be-friends-api
 
-      - run: ../gh-pages
+      - run: |
+          cd ../gh-pages
+          echo ${PWD}
 
       - name: Configure Git
         run: |
