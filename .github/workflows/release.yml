@@ -49,8 +49,8 @@ jobs:
       
       - run: |
           echo "TAG: ${GITHUB_REF_NAME}"
-          sed -i \"s/version:.*/version: ${GITHUB_REF_NAME}/\" helm/Chart.yaml
-          sed -i \"s/appVersion:.*/appVersion: \"${GITHUB_REF_NAME}\"/\" helm/Chart.yaml
+          sed -i "s/version:.*/version: ${GITHUB_REF_NAME}/" helm/Chart.yaml
+          sed -i "s/appVersion:.*/appVersion: \"${GITHUB_REF_NAME}\"/" helm/Chart.yaml
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.4.0
