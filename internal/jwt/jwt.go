@@ -12,7 +12,7 @@ var (
 	TOKEN_EXPIRE = time.Hour * 72
 )
 
-func GetNewToken(u *repository.Users) (*jwt.Token, string, error) {
+func GetNewToken(u *repository.User) (*jwt.Token, string, error) {
 	// Create the Claims
 	claims := jwt.MapClaims{
 		"id":          u.ID,

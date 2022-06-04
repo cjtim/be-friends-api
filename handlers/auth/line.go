@@ -40,7 +40,7 @@ func LineCallback(c *fiber.Ctx) error {
 	}
 
 	// 3. Create JWT
-	userInfo := repository.Users{
+	userInfo := repository.User{
 		ID:         userDB.ID,
 		Name:       profile.Name,
 		Email:      userDB.Email,

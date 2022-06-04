@@ -9,6 +9,7 @@ import (
 var (
 	DB       *sqlx.DB
 	UserRepo *UserImpl
+	TagRepo  *TagImpl
 )
 
 func Connect() (*sqlx.DB, error) {
