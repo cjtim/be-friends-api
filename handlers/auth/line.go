@@ -21,9 +21,13 @@ func LineCallback(c *fiber.Ctx) error {
 	if code == "" {
 		return c.SendStatus(http.StatusBadRequest)
 	}
+	state := c.Query("state", "")
+	if state == "" {
+		return c.SendStatus(http.StatusBadRequest)
+	}
 
 	// 1. Get profile from LINE
-	token, err := line.GetJWT(code)
+	token, err := line.GetJWT(code, state)
 	if err != nil {
 		return err
 	}

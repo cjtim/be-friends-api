@@ -8,17 +8,15 @@ import (
 
 // Route for all api request
 func Route(r *fiber.App) {
-	r.Get("/api/v1", func(c *fiber.Ctx) error {
+	v1 := r.Group("/api/v1")
+	v1.Get("", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"msg": "Hello, world"})
 	})
-	r.Get("/api/v1/health", func(c *fiber.Ctx) error {
+	v1.Get("/health", func(c *fiber.Ctx) error {
 		return c.SendString("pong")
 	})
-	authRouteSetup(r)
-}
 
-func authRouteSetup(r *fiber.App) {
-	authRoute := r.Group("/api/v1/auth")
+	authRoute := v1.Group("/auth")
 	authRoute.Get("/me", middlewares.GetJWTMiddleware, auth.Me)
 	authRoute.Get("/logout", auth.Logout)
 	authRoute.Get("/line", auth.LoginLine)

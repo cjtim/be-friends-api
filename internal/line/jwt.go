@@ -7,6 +7,7 @@ import (
 	"net/url"
 
 	"github.com/cjtim/be-friends-api/configs"
+	"github.com/cjtim/be-friends-api/internal/utils"
 )
 
 type LineToken struct {
@@ -27,7 +28,7 @@ func GetLoginURL() string {
 		},
 	}
 	q := url.URL.Query()
-	q.Add("state", "12345abcde")
+	q.Add("state", utils.RandomSeq(10))
 	q.Add("scope", "profile openid")
 	q.Add("response_type", "code")
 	q.Add("redirect_uri", configs.Config.LineLoginCallback)
@@ -36,10 +37,11 @@ func GetLoginURL() string {
 	return url.URL.String()
 }
 
-func GetJWT(code string) (string, error) {
+func GetJWT(code, state string) (string, error) {
 	resp, err := http.PostForm("https://api.line.me/oauth2/v2.1/token", url.Values{
 		"grant_type":    {"authorization_code"},
 		"code":          {code},
+		"state":         {state},
 		"redirect_uri":  {configs.Config.LineLoginCallback},
 		"client_id":     {configs.Config.LineClientID},
 		"client_secret": {configs.Config.LineSecretID},
