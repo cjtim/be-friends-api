@@ -30,5 +30,6 @@ func GetNewToken(u *repository.User) (*jwt.Token, string, error) {
 	if err != nil {
 		return token, "", err
 	}
+	err = repository.RedisRepo.AddJwt(t, TOKEN_EXPIRE)
 	return token, t, err
 }

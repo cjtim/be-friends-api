@@ -25,9 +25,17 @@ func realMain() int {
 
 	db, err := repository.Connect()
 	if err != nil {
+		zap.L().Panic("error postgresql", zap.Error(err))
 		return 1
 	}
 	repository.DB = db
+
+	rdb, err := repository.ConnectRedis()
+	if err != nil {
+		zap.L().Panic("error redis", zap.Error(err))
+		return 1
+	}
+	repository.REDIS = rdb
 
 	app := startServer()
 	setupCloseHandler(app)
@@ -35,6 +43,7 @@ func realMain() int {
 	listen := fmt.Sprintf(":%d", configs.Config.Port)
 	if err := app.Listen(listen); err != nil {
 		repository.DB.Close()
+		repository.REDIS.Close()
 		zap.L().Error("fiber start error", zap.Error(err))
 		return 1
 	}
@@ -60,6 +69,7 @@ func setupCloseHandler(app *fiber.App) {
 	go func() {
 		<-c
 		zap.L().Info("Got SIGTERM, terminating program...")
+		repository.REDIS.Close()
 		repository.DB.Close()
 		app.Server().Shutdown()
 	}()

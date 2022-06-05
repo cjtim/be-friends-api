@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/caarlos0/env v3.5.0+incompatible
+	github.com/go-redis/redis/v9 v9.0.0-beta.1
 	github.com/gofiber/fiber/v2 v2.34.0
 	github.com/gofiber/jwt/v3 v3.2.12
 	github.com/golang-jwt/jwt/v4 v4.4.1
@@ -18,6 +19,8 @@ require (
 require (
 	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
+	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/klauspost/compress v1.15.5 // indirect
 	github.com/stretchr/testify v1.7.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

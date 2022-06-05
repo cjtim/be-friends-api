@@ -21,6 +21,7 @@ type ConfigType struct {
 	JWTCookies string `env:"JWT_COOKIES" envDefault:"authToken"`
 
 	DATABASE_URL string `env:"DATABASE_URL" envDefault:""`
+	REDIS_URL    string `env:"REDIS_URL" envDefault:"localhost:3379"`
 
 	LineLoginCallback string `env:"LINE_CALLBACK_URL" envDefault:"http://localhost:8080/api/v1/auth/line/callback"`
 	LineClientID      string `env:"LINE_CLIENT_ID" envDefault:""`
