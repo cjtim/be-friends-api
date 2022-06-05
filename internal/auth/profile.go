@@ -1,4 +1,4 @@
-package line
+package auth
 
 import (
 	"encoding/json"
@@ -23,7 +23,7 @@ type LineProfile struct {
 	Email   string   `json:"email"`
 }
 
-func GetProfile(token string) (LineProfile, error) {
+func getProfile(token string) (LineProfile, error) {
 	// Get Data
 	resp, err := http.PostForm("https://api.line.me/oauth2/v2.1/verify", url.Values{
 		"id_token":  {token},

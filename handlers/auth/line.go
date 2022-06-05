@@ -3,15 +3,14 @@ package auth
 import (
 	"net/http"
 
-	users "github.com/cjtim/be-friends-api/internal/jwt"
-	"github.com/cjtim/be-friends-api/internal/line"
-	"github.com/cjtim/be-friends-api/repository"
+	"github.com/cjtim/be-friends-api/internal/auth"
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 )
 
 // LoginLine - GET line login url
 func LoginLine(c *fiber.Ctx) error {
-	url := line.GetLoginURL()
+	url := auth.GetLoginURL()
 	return c.Status(http.StatusOK).SendString(url)
 }
 
@@ -26,34 +25,10 @@ func LineCallback(c *fiber.Ctx) error {
 		return c.SendStatus(http.StatusBadRequest)
 	}
 
-	// 1. Get profile from LINE
-	token, err := line.GetJWT(code, state)
+	jwtToken, err := auth.Callback(code, state)
 	if err != nil {
-		return err
-	}
-
-	profile, err := line.GetProfile(token)
-	if err != nil {
-		return err
-	}
-
-	// 2. Update database
-	userDB, err := profile.CreateLineUser()
-	if err != nil {
-		return err
-	}
-
-	// 3. Create JWT
-	userInfo := repository.User{
-		ID:         userDB.ID,
-		Name:       profile.Name,
-		Email:      userDB.Email,
-		LineUid:    userDB.LineUid,
-		PictureURL: userDB.PictureURL,
-	}
-	_, jwtToken, err := users.GetNewToken(&userInfo)
-	if err != nil {
-		return err
+		zap.L().Error("error line callback", zap.Error(err))
+		return c.SendStatus(http.StatusInternalServerError)
 	}
 
 	return c.Status(http.StatusOK).SendString(jwtToken)

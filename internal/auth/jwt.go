@@ -1,13 +1,20 @@
-package line
+package auth
 
 import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/cjtim/be-friends-api/configs"
 	"github.com/cjtim/be-friends-api/internal/utils"
+	"github.com/cjtim/be-friends-api/repository"
+	"github.com/golang-jwt/jwt/v4"
+)
+
+var (
+	TOKEN_EXPIRE = time.Hour * 72
 )
 
 type LineToken struct {
@@ -17,6 +24,28 @@ type LineToken struct {
 	RefreshToken string `json:"refresh_token"`
 	Scope        string `json:"scope"`
 	TokenType    string `json:"token_type"`
+}
+
+func GetNewToken(u *repository.User) (*jwt.Token, string, error) {
+	// Create the Claims
+	claims := jwt.MapClaims{
+		"id":          u.ID,
+		"name":        u.Name,
+		"email":       u.Email,
+		"line_uid":    u.LineUid,
+		"picture_url": u.PictureURL,
+		"exp":         time.Now().Add(TOKEN_EXPIRE).Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// Generate encoded token and send it as response.
+	t, err := token.SignedString([]byte(configs.Config.JWTSecret))
+	if err != nil {
+		return token, "", err
+	}
+	err = repository.RedisRepo.AddJwt(t, TOKEN_EXPIRE)
+	return token, t, err
 }
 
 func GetLoginURL() string {
@@ -37,7 +66,7 @@ func GetLoginURL() string {
 	return url.URL.String()
 }
 
-func GetJWT(code, state string) (string, error) {
+func getJWT(code, state string) (string, error) {
 	resp, err := http.PostForm("https://api.line.me/oauth2/v2.1/token", url.Values{
 		"grant_type":    {"authorization_code"},
 		"code":          {code},
@@ -61,4 +90,34 @@ func GetJWT(code, state string) (string, error) {
 		return "", err
 	}
 	return userInfo.IDToken, err
+}
+
+func Callback(code, state string) (string, error) {
+	// 1. Get profile from LINE
+	token, err := getJWT(code, state)
+	if err != nil {
+		return "", err
+	}
+
+	profile, err := getProfile(token)
+	if err != nil {
+		return "", err
+	}
+
+	// 2. Update database
+	userDB, err := profile.createLineUser()
+	if err != nil {
+		return "", err
+	}
+
+	// 3. Create JWT
+	userInfo := repository.User{
+		ID:         userDB.ID,
+		Name:       profile.Name,
+		Email:      userDB.Email,
+		LineUid:    userDB.LineUid,
+		PictureURL: userDB.PictureURL,
+	}
+	_, jwtToken, err := GetNewToken(&userInfo)
+	return jwtToken, err
 }
