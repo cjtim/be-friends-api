@@ -23,6 +23,8 @@ extraEnvs:
     value: https://public-fe-url/user/line/callback
   - name: DATABASE_URL
     value: postgresql://user:password@url:5432/database?sslmode=disable
+  - name: REDIS_URL
+    value: 
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -92,3 +94,10 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+redis:
+  image:
+    repository: library/redis
+    tag: 7-alpine
+  storage:
+    requestedSize: 100Mi
