@@ -2,8 +2,22 @@ apiVersion: v1
 entries:
   api:
   - apiVersion: v2
+    appVersion: v1.1.6
+    created: "2022-06-10T14:36:25.477921626Z"
+    dependencies:
+    - name: redis
+      repository: https://groundhog2k.github.io/helm-charts
+      version: v1.1.6
+    description: A Helm chart for Kubernetes
+    digest: d07d598911113c3b5576d934c6821147f41e0617e699ebf66969cc5701278db6
+    name: api
+    type: application
+    urls:
+    - https://cjtim.github.io/be-friends-api/api-v1.1.6.tgz
+    version: v1.1.6
+  - apiVersion: v2
     appVersion: v1.1.5
-    created: "2022-06-05T11:42:31.579319758Z"
+    created: "2022-06-10T14:36:25.476155315Z"
     dependencies:
     - name: redis
       repository: https://groundhog2k.github.io/helm-charts
@@ -17,7 +31,7 @@ entries:
     version: v1.1.5
   - apiVersion: v2
     appVersion: v1.1.4
-    created: "2022-06-05T11:42:31.578023262Z"
+    created: "2022-06-10T14:36:25.474927608Z"
     dependencies:
     - name: redis
       repository: https://groundhog2k.github.io/helm-charts
@@ -31,7 +45,7 @@ entries:
     version: v1.1.4
   - apiVersion: v2
     appVersion: v1.1.3
-    created: "2022-06-05T11:42:31.576751166Z"
+    created: "2022-06-10T14:36:25.473746101Z"
     dependencies:
     - name: redis
       repository: https://groundhog2k.github.io/helm-charts
@@ -45,7 +59,7 @@ entries:
     version: v1.1.3
   - apiVersion: v2
     appVersion: v1.1.2
-    created: "2022-06-05T11:42:31.575420371Z"
+    created: "2022-06-10T14:36:25.472429893Z"
     dependencies:
     - name: redis
       repository: https://groundhog2k.github.io/helm-charts
@@ -59,7 +73,7 @@ entries:
     version: v1.1.2
   - apiVersion: v2
     appVersion: v1.1.0
-    created: "2022-06-05T11:42:31.573807176Z"
+    created: "2022-06-10T14:36:25.471148585Z"
     description: A Helm chart for Kubernetes
     digest: a2b951264c28d536728b3349765444fe6df36cc36f885dcfb20f2216a3cddb6a
     name: api
@@ -69,7 +83,7 @@ entries:
     version: v1.1.0
   - apiVersion: v2
     appVersion: v1.0.15
-    created: "2022-06-05T11:42:31.573136378Z"
+    created: "2022-06-10T14:36:25.470693082Z"
     description: A Helm chart for Kubernetes
     digest: fc5074bc7dd2ae22eeca96bdec710d6c8d1672292a341f798bd62ea3b19280da
     name: api
@@ -79,7 +93,7 @@ entries:
     version: v1.0.15
   - apiVersion: v2
     appVersion: v1.0.14
-    created: "2022-06-05T11:42:31.572113881Z"
+    created: "2022-06-10T14:36:25.470201579Z"
     description: A Helm chart for Kubernetes
     digest: e529002ddd58c67f2c505f3e910c3ca7bdd1ef7e29e4eed4d2cb955e286a625c
     name: api
@@ -87,4 +101,4 @@ entries:
     urls:
     - https://cjtim.github.io/be-friends-api/api-v1.0.14.tgz
     version: v1.0.14
-generated: "2022-06-05T11:42:31.570910785Z"
+generated: "2022-06-10T14:36:25.468086366Z"
