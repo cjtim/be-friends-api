@@ -1,0 +1,16 @@
+name: Deploy to k8s
+
+on: page_build
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger deployment
+        run: |
+          run: |
+            curl -XPOST -u "${{ github.repository_owner }}:${{secrets.PUSH_PAT}}" \
+            -H "Accept: application/vnd.github.everest-preview+json" \
+            -H "Content-Type: application/json" \
+            https://api.github.com/repos/${{ github.repository }}/dispatches \
+            --data '{"event_type": "deploy-api"}'
