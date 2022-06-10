@@ -78,6 +78,8 @@ jobs:
 
   helm-chart:
     runs-on: ubuntu-latest
+    needs:
+      - build
     steps:
       - name: Install Helm
         uses: azure/setup-helm@v1
