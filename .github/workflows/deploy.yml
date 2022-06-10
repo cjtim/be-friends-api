@@ -9,8 +9,8 @@ jobs:
     steps:
       - name: Trigger deployment
         run: |
-          curl -XPOST -u "${{ github.repository_owner }}:${{secrets.PUSH_PAT}}" \
+          curl -XPOST -u "${{ github.repository_owner }}:${{ secrets.PUSH_PAT }}" \
           -H "Accept: application/vnd.github.everest-preview+json" \
           -H "Content-Type: application/json" \
-          https://api.github.com/repos/${{ github.repository }}/dispatches \
+          https://api.github.com/repos/cjtim/be-friends-deployment/dispatches \
           --data '{"event_type": "deploy-api"}'
