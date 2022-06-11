@@ -13,5 +13,13 @@ var (
 )
 
 func Connect() (*sqlx.DB, error) {
-	return sqlx.Open("postgres", configs.Config.DATABASE_URL)
+	db, err := sqlx.Open("postgres", configs.Config.DATABASE_URL)
+	if err != nil {
+		return nil, err
+	}
+	if db.Ping() != nil {
+		return nil, err
+	}
+	DB = db
+	return db, err
 }

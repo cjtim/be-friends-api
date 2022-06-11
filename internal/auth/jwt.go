@@ -11,6 +11,7 @@ import (
 	"github.com/cjtim/be-friends-api/internal/utils"
 	"github.com/cjtim/be-friends-api/repository"
 	"github.com/golang-jwt/jwt/v4"
+	"go.uber.org/zap"
 )
 
 var (
@@ -44,11 +45,11 @@ func GetNewToken(u *repository.User) (*jwt.Token, string, error) {
 	if err != nil {
 		return token, "", err
 	}
-	err = repository.RedisRepo.AddJwt(t, TOKEN_EXPIRE)
+	err = repository.RedisJwt.AddJwt(t, TOKEN_EXPIRE)
 	return token, t, err
 }
 
-func GetLoginURL() string {
+func GetLoginURL(clientURL string) string {
 	url := http.Request{
 		URL: &url.URL{
 			Scheme: "https",
@@ -56,8 +57,16 @@ func GetLoginURL() string {
 			Path:   "/oauth2/v2.1/authorize",
 		},
 	}
+
+	state := utils.RandomSeq(10)
+	err := repository.RedisCallback.AddCallback(state, clientURL)
+	if err != nil {
+		zap.L().Error("error redis - cannot save callback", zap.Error(err))
+		return ""
+	}
+
 	q := url.URL.Query()
-	q.Add("state", utils.RandomSeq(10))
+	q.Add("state", state)
 	q.Add("scope", "profile openid")
 	q.Add("response_type", "code")
 	q.Add("redirect_uri", configs.Config.LineLoginCallback)
@@ -66,11 +75,10 @@ func GetLoginURL() string {
 	return url.URL.String()
 }
 
-func getJWT(code, state string) (string, error) {
+func getJWT(code string) (string, error) {
 	resp, err := http.PostForm("https://api.line.me/oauth2/v2.1/token", url.Values{
 		"grant_type":    {"authorization_code"},
 		"code":          {code},
-		"state":         {state},
 		"redirect_uri":  {configs.Config.LineLoginCallback},
 		"client_id":     {configs.Config.LineClientID},
 		"client_secret": {configs.Config.LineSecretID},
@@ -92,9 +100,9 @@ func getJWT(code, state string) (string, error) {
 	return userInfo.IDToken, err
 }
 
-func Callback(code, state string) (string, error) {
+func Callback(code string) (string, error) {
 	// 1. Get profile from LINE
-	token, err := getJWT(code, state)
+	token, err := getJWT(code)
 	if err != nil {
 		return "", err
 	}

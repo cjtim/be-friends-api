@@ -1,16 +1,24 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
+	"github.com/cjtim/be-friends-api/configs"
 	"github.com/cjtim/be-friends-api/internal/auth"
+	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 )
 
 // LoginLine - GET line login url
 func LoginLine(c *fiber.Ctx) error {
-	url := auth.GetLoginURL()
+	host := c.Query("host")
+	url := auth.GetLoginURL(host)
+	if url == "" {
+		return c.SendStatus(http.StatusInternalServerError)
+	}
 	return c.Status(http.StatusOK).SendString(url)
 }
 
@@ -25,11 +33,23 @@ func LineCallback(c *fiber.Ctx) error {
 		return c.SendStatus(http.StatusBadRequest)
 	}
 
-	jwtToken, err := auth.Callback(code, state)
+	jwtToken, err := auth.Callback(code)
 	if err != nil {
 		zap.L().Error("error line callback", zap.Error(err))
 		return c.SendStatus(http.StatusInternalServerError)
 	}
 
-	return c.Status(http.StatusOK).SendString(jwtToken)
+	clientHost, err := repository.RedisCallback.GetCallback(state)
+	if err != nil {
+		zap.L().Error("error redis - cannot get callback by state", zap.Error(err))
+	}
+	redirectURL := fmt.Sprintf("http://%s%s", clientHost, configs.Config.LINE_WEB_CALLBACK_PATH)
+	authCookie := fmt.Sprintf(
+		"%s=%s; Max-Age=%d; Path=/",
+		configs.Config.JWTCookies,
+		jwtToken,
+		int64(auth.TOKEN_EXPIRE/time.Second),
+	)
+	c.Response().Header.Add("set-cookie", authCookie)
+	return c.Redirect(redirectURL)
 }

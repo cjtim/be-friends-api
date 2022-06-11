@@ -23,7 +23,7 @@ var GetJWTMiddleware = func(c *fiber.Ctx) error {
 		token = jwt
 	}
 	// Check token in Redis
-	notValid := !repository.RedisRepo.IsJwtValid(token)
+	notValid := !repository.RedisJwt.IsJwtValid(token)
 	if notValid {
 		return c.Status(http.StatusBadRequest).SendString("Invalid JWT")
 	}

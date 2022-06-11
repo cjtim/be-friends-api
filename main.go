@@ -23,34 +23,52 @@ func realMain() int {
 	defer logger.Sync()
 	zap.ReplaceGlobals(logger)
 
-	db, err := repository.Connect()
-	if err != nil {
-		zap.L().Panic("error postgresql", zap.Error(err))
-		return 1
+	errDB := prepareDB()
+	if errDB > 0 {
+		return errDB
 	}
-	repository.DB = db
 
-	rdb, err := repository.ConnectRedis()
-	if err != nil {
-		zap.L().Panic("error redis", zap.Error(err))
-		return 1
-	}
-	repository.REDIS = rdb
-
-	app := startServer()
+	app := prepareFiber()
 	setupCloseHandler(app)
 
 	listen := fmt.Sprintf(":%d", configs.Config.Port)
-	if err := app.Listen(listen); err != nil {
-		repository.DB.Close()
-		repository.REDIS.Close()
-		zap.L().Error("fiber start error", zap.Error(err))
+	err := app.Listen(listen)
+	zap.L().Info("closing fiber", zap.Error(err))
+	zap.L().Info("closing redis conn", zap.Errors("redis", repository.CloseAll()))
+	zap.L().Info("closing postgres conn", zap.Error(repository.DB.Close()))
+	if err != nil {
+		zap.L().Error("fiber error", zap.Error(err))
 		return 1
 	}
 	return 0
 }
 
-func startServer() *fiber.App {
+func prepareDB() int {
+	_, err := repository.Connect()
+	if err != nil {
+		zap.L().Panic("error postgresql", zap.Error(err))
+		return 1
+	}
+
+	_, err = repository.ConnectRedis(repository.DEFAULT)
+	if err != nil {
+		zap.L().Panic("error redis", zap.Error(err))
+		return 1
+	}
+	_, err = repository.ConnectRedis(repository.JWT)
+	if err != nil {
+		zap.L().Panic("error redis", zap.Error(err))
+		return 1
+	}
+	_, err = repository.ConnectRedis(repository.CALLBACK)
+	if err != nil {
+		zap.L().Panic("error redis", zap.Error(err))
+		return 1
+	}
+	return 0
+}
+
+func prepareFiber() *fiber.App {
 	app := fiber.New(fiber.Config{
 		ErrorHandler: middlewares.ErrorHandling,
 		BodyLimit:    100 * 1024 * 1024, // Limit file size to 100MB
@@ -69,8 +87,6 @@ func setupCloseHandler(app *fiber.App) {
 	go func() {
 		<-c
 		zap.L().Info("Got SIGTERM, terminating program...")
-		repository.REDIS.Close()
-		repository.DB.Close()
 		app.Server().Shutdown()
 	}()
 }

@@ -9,31 +9,75 @@ import (
 )
 
 var (
-	REDIS     *redis.Client
-	RedisRepo *RedisImpl
+	RedisDefault  *defaultImpl
+	RedisJwt      *jwtImpl
+	RedisCallback *callbackImpl
 )
 
-func ConnectRedis() (rdb *redis.Client, err error) {
+type RedisDatabase int
+
+const (
+	DEFAULT  RedisDatabase = 0
+	JWT      RedisDatabase = 1
+	CALLBACK RedisDatabase = 2
+)
+
+func ConnectRedis(db RedisDatabase) (rdb *redis.Client, err error) {
 	rdb = redis.NewClient(&redis.Options{
 		Addr:     configs.Config.REDIS_URL,
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Password: "",      // no password set
+		DB:       int(db), // use default DB
 	})
+	switch db {
+	case JWT:
+		RedisJwt = &jwtImpl{Client: rdb}
+	case CALLBACK:
+		RedisCallback = &callbackImpl{Client: rdb}
+	default:
+		RedisDefault = &defaultImpl{Client: rdb}
+	}
+
 	err = rdb.Set(context.Background(), "test", "test", time.Second*1).Err()
 	return
 }
 
-type RedisImpl struct{}
+func CloseAll() []error {
+	return []error{
+		RedisDefault.Client.Close(),
+		RedisJwt.Client.Close(),
+		RedisCallback.Client.Close(),
+	}
+}
 
-func (r *RedisImpl) IsJwtValid(token string) bool {
-	err := REDIS.Get(context.Background(), token).Err()
+type defaultImpl struct {
+	Client *redis.Client
+}
+
+type jwtImpl struct {
+	Client *redis.Client
+}
+
+type callbackImpl struct {
+	Client *redis.Client
+}
+
+func (r *jwtImpl) IsJwtValid(token string) bool {
+	err := r.Client.Get(context.Background(), token).Err()
 	return err != redis.Nil
 }
 
-func (r *RedisImpl) AddJwt(token string, expire time.Duration) error {
-	return REDIS.Set(context.Background(), token, "", expire).Err()
+func (r *jwtImpl) AddJwt(token string, expire time.Duration) error {
+	return r.Client.Set(context.Background(), token, "", expire).Err()
 }
 
-func (r *RedisImpl) RemoveJwt(token string) error {
-	return REDIS.Del(context.Background(), token).Err()
+func (r *jwtImpl) RemoveJwt(token string) error {
+	return r.Client.Del(context.Background(), token).Err()
+}
+
+func (r *callbackImpl) AddCallback(state, callback string) error {
+	return r.Client.Set(context.Background(), state, callback, time.Minute*15).Err()
+}
+
+func (r *callbackImpl) GetCallback(state string) (string, error) {
+	return r.Client.Get(context.Background(), state).Result()
 }

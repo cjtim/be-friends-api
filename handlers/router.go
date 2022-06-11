@@ -20,5 +20,5 @@ func Route(r *fiber.App) {
 	authRoute.Get("/me", middlewares.GetJWTMiddleware, auth.Me)
 	authRoute.Get("/logout", auth.Logout)
 	authRoute.Get("/line", auth.LoginLine)
-	authRoute.Get("/line/jwt", auth.LineCallback)
+	authRoute.Get("/line/callback", auth.LineCallback)
 }

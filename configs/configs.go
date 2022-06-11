@@ -27,14 +27,10 @@ type ConfigType struct {
 	LineClientID      string `env:"LINE_CLIENT_ID" envDefault:""`
 	LineSecretID      string `env:"LINE_SECRET_ID" envDefault:""`
 
-	LineAPIBroadcast        string `envDefault:"https://api.line.me/v2/bot/message/broadcast"`
-	LineAPIReply            string `envDefault:"https://api.line.me/v2/bot/message/reply"`
-	AirVisualAPINearestCity string `envDefault:"http://api.airvisual.com/v2/nearest_city"`
-	AirVisualAPICity        string `envDefault:"http://api.airvisual.com/v2/city"`
-	BinanceAccountAPI       string `envDefault:"https://api.binance.com/api/v3/account"`
-	RebrandlyAPI            string `envDefault:"https://api.rebrandly.com/v1/links"`
-	LogFilePath             string `env:"LOG_PATH" envDefault:"/var/log/cjtim-backend-go.log"`
-	GCLOUD_CREDENTIAL       string `env:"GCLOUD_CREDENTIAL" envDefault:"./configs/serviceAcc.json"`
+	LINE_WEB_CALLBACK_PATH string `env:"LINE_WEB_CALLBACK_PATH" envDefault:"/user/line/callback"`
+
+	LogFilePath       string `env:"LOG_PATH" envDefault:"/var/log/cjtim-backend-go.log"`
+	GCLOUD_CREDENTIAL string `env:"GCLOUD_CREDENTIAL" envDefault:"./configs/serviceAcc.json"`
 }
 
 func init() {

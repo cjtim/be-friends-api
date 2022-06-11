@@ -9,7 +9,7 @@ import (
 )
 
 func Logout(c *fiber.Ctx) error {
-	err := repository.RedisRepo.RemoveJwt(c.Cookies(configs.Config.JWTCookies))
+	err := repository.RedisJwt.RemoveJwt(c.Cookies(configs.Config.JWTCookies))
 	if err != nil {
 		return c.SendStatus(http.StatusInternalServerError)
 	}
