@@ -28,9 +28,8 @@ type ConfigType struct {
 	LineSecretID           string `env:"LINE_SECRET_ID" envDefault:""`
 	LINE_WEB_CALLBACK_PATH string `env:"LINE_WEB_CALLBACK_PATH" envDefault:"/user/line/callback"`
 
-	CORS_ALLOW_ORIGINS string `env:"CORS_ALLOW_ORIGINS" envDefault:"http://localhost:3000,https://be-friends.vercel.app"`
-	LogFilePath        string `env:"LOG_PATH" envDefault:"/var/log/cjtim-backend-go.log"`
-	GCLOUD_CREDENTIAL  string `env:"GCLOUD_CREDENTIAL" envDefault:"./configs/serviceAcc.json"`
+	LogFilePath       string `env:"LOG_PATH" envDefault:"/var/log/cjtim-backend-go.log"`
+	GCLOUD_CREDENTIAL string `env:"GCLOUD_CREDENTIAL" envDefault:"./configs/serviceAcc.json"`
 }
 
 func init() {
