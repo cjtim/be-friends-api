@@ -49,7 +49,7 @@ func LineCallback(c *fiber.Ctx) error {
 	}
 	redirectURL := fmt.Sprintf("http://%s%s", clientHost, configs.Config.LINE_WEB_CALLBACK_PATH)
 	authCookie := fmt.Sprintf(
-		"%s=%s; Max-Age=%d; Path=/",
+		"%s=%s; Max-Age=%d; Path=/; SameSite=None; Secure;",
 		configs.Config.JWTCookies,
 		jwtToken,
 		int64(auth.TOKEN_EXPIRE/time.Second),
