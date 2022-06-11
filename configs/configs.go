@@ -23,14 +23,14 @@ type ConfigType struct {
 	DATABASE_URL string `env:"DATABASE_URL" envDefault:""`
 	REDIS_URL    string `env:"REDIS_URL" envDefault:"localhost:3379"`
 
-	LineLoginCallback string `env:"LINE_CALLBACK_URL" envDefault:"http://localhost:8080/api/v1/auth/line/callback"`
-	LineClientID      string `env:"LINE_CLIENT_ID" envDefault:""`
-	LineSecretID      string `env:"LINE_SECRET_ID" envDefault:""`
-
+	LineLoginCallback      string `env:"LINE_CALLBACK_URL" envDefault:"http://localhost:8080/api/v1/auth/line/callback"`
+	LineClientID           string `env:"LINE_CLIENT_ID" envDefault:""`
+	LineSecretID           string `env:"LINE_SECRET_ID" envDefault:""`
 	LINE_WEB_CALLBACK_PATH string `env:"LINE_WEB_CALLBACK_PATH" envDefault:"/user/line/callback"`
 
-	LogFilePath       string `env:"LOG_PATH" envDefault:"/var/log/cjtim-backend-go.log"`
-	GCLOUD_CREDENTIAL string `env:"GCLOUD_CREDENTIAL" envDefault:"./configs/serviceAcc.json"`
+	CORS_ALLOW_ORIGINS string `env:"CORS_ALLOW_ORIGINS" envDefault:"http://localhost:3000,https://be-friends.vercel.app"`
+	LogFilePath        string `env:"LOG_PATH" envDefault:"/var/log/cjtim-backend-go.log"`
+	GCLOUD_CREDENTIAL  string `env:"GCLOUD_CREDENTIAL" envDefault:"./configs/serviceAcc.json"`
 }
 
 func init() {

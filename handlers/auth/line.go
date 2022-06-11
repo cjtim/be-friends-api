@@ -3,7 +3,6 @@ package auth
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/cjtim/be-friends-api/configs"
 	"github.com/cjtim/be-friends-api/internal/auth"
@@ -22,8 +21,28 @@ func LoginLine(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).SendString(url)
 }
 
-// LineCallback - Users being redirect here to register with us
+// LineCallback - Redirect user back to the website they're coming from
 func LineCallback(c *fiber.Ctx) error {
+	state := c.Query("state", "")
+	if state == "" {
+		return c.SendStatus(http.StatusBadRequest)
+	}
+
+	clientHost, err := repository.RedisCallback.GetCallback(state)
+	if err != nil || clientHost == "" {
+		zap.L().Error(
+			"error redis - cannot get callback by state",
+			zap.String("state", state),
+			zap.Error(err),
+		)
+	}
+	redirectURL := fmt.Sprintf("http://%s%s?%s", clientHost, configs.Config.LINE_WEB_CALLBACK_PATH, string(c.Request().URI().QueryString()))
+	return c.Redirect(redirectURL)
+}
+
+// LineGetJwt - After user back to website.
+// Exchange code from line to jwt
+func LineGetJwt(c *fiber.Ctx) error {
 	code := c.Query("code", "")
 	if code == "" {
 		return c.SendStatus(http.StatusBadRequest)
@@ -38,22 +57,5 @@ func LineCallback(c *fiber.Ctx) error {
 		return c.SendStatus(http.StatusInternalServerError)
 	}
 
-	clientHost, err := repository.RedisCallback.GetCallback(state)
-	if err != nil || clientHost == "" {
-		zap.L().Error(
-			"error redis - cannot get callback by state",
-			zap.String("jwt", jwtToken),
-			zap.String("state", state),
-			zap.Error(err),
-		)
-	}
-	redirectURL := fmt.Sprintf("http://%s%s", clientHost, configs.Config.LINE_WEB_CALLBACK_PATH)
-	authCookie := fmt.Sprintf(
-		"%s=%s; Max-Age=%d; Path=/; SameSite=None; Secure;",
-		configs.Config.JWTCookies,
-		jwtToken,
-		int64(auth.TOKEN_EXPIRE/time.Second),
-	)
-	c.Response().Header.Add("set-cookie", authCookie)
-	return c.Redirect(redirectURL)
+	return c.SendString(jwtToken)
 }
