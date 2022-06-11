@@ -61,7 +61,7 @@ func GetLoginURL(clientURL string) string {
 	state := utils.RandomSeq(10)
 	err := repository.RedisCallback.AddCallback(state, clientURL)
 	if err != nil {
-		zap.L().Error("error redis - cannot save callback", zap.Error(err))
+		zap.L().Error("error redis - cannot save callback", zap.String("clientURL", clientURL), zap.Error(err))
 		return ""
 	}
 
@@ -104,17 +104,20 @@ func Callback(code string) (string, error) {
 	// 1. Get profile from LINE
 	token, err := getJWT(code)
 	if err != nil {
+		zap.L().Error("error line get jwt", zap.String("code", code), zap.Error(err))
 		return "", err
 	}
 
 	profile, err := getProfile(token)
 	if err != nil {
+		zap.L().Error("error line get profile", zap.String("token", token), zap.Error(err))
 		return "", err
 	}
 
 	// 2. Update database
 	userDB, err := profile.createLineUser()
 	if err != nil {
+		zap.L().Error("error create user line", zap.Any("profile", profile), zap.Error(err))
 		return "", err
 	}
 

@@ -35,13 +35,17 @@ func LineCallback(c *fiber.Ctx) error {
 
 	jwtToken, err := auth.Callback(code)
 	if err != nil {
-		zap.L().Error("error line callback", zap.Error(err))
 		return c.SendStatus(http.StatusInternalServerError)
 	}
 
 	clientHost, err := repository.RedisCallback.GetCallback(state)
-	if err != nil {
-		zap.L().Error("error redis - cannot get callback by state", zap.Error(err))
+	if err != nil || clientHost == "" {
+		zap.L().Error(
+			"error redis - cannot get callback by state",
+			zap.String("jwt", jwtToken),
+			zap.String("state", state),
+			zap.Error(err),
+		)
 	}
 	redirectURL := fmt.Sprintf("http://%s%s", clientHost, configs.Config.LINE_WEB_CALLBACK_PATH)
 	authCookie := fmt.Sprintf(
