@@ -35,14 +35,15 @@ func (u *UserImpl) GetById(id uuid.UUID) (User, error) {
 	stm := `SELECT * FROM "user" WHERE id = $1`
 	row, err := DB.Queryx(stm, id)
 	if err != nil {
-		return User{}, nil
+		return User{}, err
 	}
 	result := User{}
 	err = row.StructScan(&result)
 	return result, err
 }
 
-func (u *UserImpl) UpsertLine(user User) (result User, err error) {
+func (u *UserImpl) UpsertLine(user User) (User, error) {
+	result := User{}
 	stmUpdate := `
 		UPDATE "user"
 		SET picture_url = :picture_url, updated_at = NOW()
@@ -51,7 +52,7 @@ func (u *UserImpl) UpsertLine(user User) (result User, err error) {
 	`
 	row, err := DB.NamedQuery(stmUpdate, user)
 	if err != nil {
-		return
+		return result, err
 	}
 	noUpdatedRow := !row.Next()
 	if noUpdatedRow {
@@ -62,18 +63,47 @@ func (u *UserImpl) UpsertLine(user User) (result User, err error) {
 		`
 		row, err = DB.NamedQuery(stmInsert, user)
 		if err != nil {
-			return
+			return result, err
 		}
 		if row.Next() {
-			row.StructScan(&result)
+			err = row.StructScan(&result)
 			zap.L().Info("NEW USER LOGIN", zap.String("line_uid", *result.LineUid))
 			return result, err
 		}
 		err = errors.New("cannot get inserted result")
 		zap.L().Error("NEW USER LOGIN", zap.String("line_uid", *result.LineUid), zap.Error(err))
-		return User{}, err
+		return result, err
 	}
 	err = row.StructScan(&result)
 	zap.L().Info("OLD USER LOGIN", zap.String("line_uid", *result.LineUid), zap.Error(err))
+	return result, err
+}
+
+func (u *UserImpl) RegisterUser(user User) (result User, err error) {
+	stmInsert := `
+		INSERT INTO "user" (name, email, password)
+		VALUES (:name, :email, :password)
+		RETURNING *
+	`
+	rows, err := DB.NamedQuery(stmInsert, user)
+	if err != nil {
+		zap.L().Error("error register user", zap.String("email", *user.Email), zap.String("name", user.Name))
+		return
+	}
+	if rows.Next() {
+		rows.StructScan(&result)
+		zap.L().Info("NEW USER register", zap.Any("id", result.ID))
+		return result, err
+	}
+	return User{}, errors.New("error register user - cannot parse inserted row")
+}
+
+func (u *UserImpl) GetUserByEmailWithPassword(email string) (User, error) {
+	result := User{}
+	stm := `SELECT * FROM "user" WHERE email = $1`
+	err := DB.Get(&result, stm, email)
+	if err != nil {
+		return User{}, err
+	}
 	return result, err
 }
