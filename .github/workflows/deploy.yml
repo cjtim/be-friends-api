@@ -6,6 +6,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://be-friends.cjtim.com/api/v1
     steps:
       - name: Trigger deployment
         run: |
