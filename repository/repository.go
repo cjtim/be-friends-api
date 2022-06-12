@@ -17,7 +17,8 @@ func Connect() (*sqlx.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	if db.Ping() != nil {
+	err = db.Ping()
+	if err != nil {
 		return nil, err
 	}
 	DB = db

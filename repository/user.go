@@ -21,26 +21,26 @@ type User struct {
 	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
 }
 
-func (u *UserImpl) List() ([]User, error) {
-	users := []User{}
-	rows := DB.QueryRow(`SELECT * FROM "user"`)
-	err := rows.Scan(&users)
-	if err != nil {
-		return []User{}, err
-	}
-	return users, err
-}
+// func (u *UserImpl) List() ([]User, error) {
+// 	users := []User{}
+// 	rows := DB.QueryRow(`SELECT * FROM "user"`)
+// 	err := rows.Scan(&users)
+// 	if err != nil {
+// 		return []User{}, err
+// 	}
+// 	return users, err
+// }
 
-func (u *UserImpl) GetById(id uuid.UUID) (User, error) {
-	stm := `SELECT * FROM "user" WHERE id = $1`
-	row, err := DB.Queryx(stm, id)
-	if err != nil {
-		return User{}, err
-	}
-	result := User{}
-	err = row.StructScan(&result)
-	return result, err
-}
+// func (u *UserImpl) GetById(id uuid.UUID) (User, error) {
+// 	stm := `SELECT * FROM "user" WHERE id = $1`
+// 	row, err := DB.Queryx(stm, id)
+// 	if err != nil {
+// 		return User{}, err
+// 	}
+// 	result := User{}
+// 	err = row.StructScan(&result)
+// 	return result, err
+// }
 
 func (u *UserImpl) UpsertLine(user User) (User, error) {
 	result := User{}
@@ -102,8 +102,5 @@ func (u *UserImpl) GetUserByEmailWithPassword(email string) (User, error) {
 	result := User{}
 	stm := `SELECT * FROM "user" WHERE email = $1`
 	err := DB.Get(&result, stm, email)
-	if err != nil {
-		return User{}, err
-	}
 	return result, err
 }
