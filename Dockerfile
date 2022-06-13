@@ -12,6 +12,8 @@ COPY . .
 ARG GOARCH
 ARG GOOS=linux
 ARG CGO_ENABLED=0
+ARG TAG
+ENV VERSION=${TAG}
 
 RUN go build -o main main.go
 

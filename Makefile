@@ -19,7 +19,7 @@ pre-run:
 	-e POSTGRES_PASSWORD=postgres \
 	-e POSTGRES_DB=be-friends \
 	-v $(PWD)/tools/db:/docker-entrypoint-initdb.d \
-	postgres:14.3-alpine || true
+	postgres:14.3-alpine && sleep 5 || true
 
 run: pre-run
 	REDIS_URL=localhost:$(REDIS_PORT) \
@@ -28,7 +28,7 @@ run: pre-run
 	LINE_SECRET_ID=$(LINE_SECRET_ID) \
 	BACKET_NAME=$(BACKET_NAME) \
 	GCLOUD_CREDENTIAL=$(GCLOUD_CREDENTIAL) \
-	go run main.go
+	go run main.go 
 
 clean:
 	docker rm -f $(REDIS_CONTAINER) || true

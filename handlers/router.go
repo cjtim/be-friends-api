@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"os"
+
 	"github.com/cjtim/be-friends-api/handlers/auth"
 	"github.com/cjtim/be-friends-api/handlers/middlewares"
 	"github.com/cjtim/be-friends-api/repository"
@@ -26,6 +28,9 @@ func Route(r *fiber.App) {
 	})
 	v1.Get("/health", func(c *fiber.Ctx) error {
 		return c.SendString("pong")
+	})
+	v1.Get("/version", func(c *fiber.Ctx) error {
+		return c.SendString(os.Getenv("VERSION"))
 	})
 
 	authRoute := v1.Group("/auth")
