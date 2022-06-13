@@ -47,10 +47,10 @@ func InitConfig() error {
 	if envFile == "" {
 		envFile = ".env"
 	}
-	err = godotenv.Load(envFile)
-	if err != nil {
-		return err
-	}
+	// Load from .env file
+	_ = godotenv.Load(envFile)
+
+	// Parse env to struct
 	err = env.Parse(&cfg)
 	if err != nil {
 		log.Fatal(err)
