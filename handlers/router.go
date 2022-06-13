@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/cjtim/be-friends-api/handlers/auth"
 	"github.com/cjtim/be-friends-api/handlers/middlewares"
+	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -11,6 +12,17 @@ func Route(r *fiber.App) {
 	v1 := r.Group("/api/v1")
 	v1.Get("", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"msg": "Hello, world"})
+	})
+	v1.Get("/ready", func(c *fiber.Ctx) error {
+		err := repository.IsRedisReady()
+		if err != nil {
+			return err
+		}
+		err = repository.DB.Ping()
+		if err != nil {
+			return err
+		}
+		return c.SendStatus(fiber.StatusOK)
 	})
 	v1.Get("/health", func(c *fiber.Ctx) error {
 		return c.SendString("pong")

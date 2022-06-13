@@ -41,6 +41,18 @@ func ConnectRedis(db RedisDatabase) (rdb *redis.Client, err error) {
 	return
 }
 
+func IsRedisReady() error {
+	err := RedisDefault.Client.Set(context.Background(), "test", "test", time.Second*1).Err()
+	if err != nil {
+		return err
+	}
+	err = RedisJwt.Client.Set(context.Background(), "test", "test", time.Second*1).Err()
+	if err != nil {
+		return err
+	}
+	return RedisCallback.Client.Set(context.Background(), "test", "test", time.Second*1).Err()
+}
+
 func CloseAll() []error {
 	errs := []error{}
 	if RedisDefault.Client != nil {
