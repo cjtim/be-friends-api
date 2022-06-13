@@ -42,11 +42,17 @@ func ConnectRedis(db RedisDatabase) (rdb *redis.Client, err error) {
 }
 
 func CloseAll() []error {
-	return []error{
-		RedisDefault.Client.Close(),
-		RedisJwt.Client.Close(),
-		RedisCallback.Client.Close(),
+	errs := []error{}
+	if RedisDefault.Client != nil {
+		errs = append(errs, RedisDefault.Client.Close())
 	}
+	if RedisJwt.Client != nil {
+		errs = append(errs, RedisJwt.Client.Close())
+	}
+	if RedisCallback.Client != nil {
+		errs = append(errs, RedisCallback.Client.Close())
+	}
+	return errs
 }
 
 type defaultImpl struct {

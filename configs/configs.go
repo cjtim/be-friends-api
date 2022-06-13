@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/caarlos0/env"
+	"github.com/caarlos0/env/v6"
 	"github.com/joho/godotenv"
 )
 
@@ -16,27 +16,29 @@ var (
 )
 
 type ConfigType struct {
-	Port       int    `env:"PORT" envDefault:"8080"`
-	JWTSecret  string `env:"JWT_SECRET" envDefault:"test"`
-	JWTCookies string `env:"JWT_COOKIES" envDefault:"authToken"`
+	Port       int    `env:"PORT,required,notEmpty" envDefault:"8080"`
+	JWTSecret  string `env:"JWT_SECRET,required,notEmpty" envDefault:"test"`
+	JWTCookies string `env:"JWT_COOKIES,required,notEmpty" envDefault:"authToken"`
 
-	DATABASE_URL string `env:"DATABASE_URL" envDefault:""`
-	REDIS_URL    string `env:"REDIS_URL" envDefault:"localhost:3379"`
+	DATABASE_URL string `env:"DATABASE_URL,required,notEmpty" envDefault:""`
+	REDIS_URL    string `env:"REDIS_URL,required,notEmpty" envDefault:"localhost:3379"`
 
-	LineLoginCallback      string `env:"LINE_CALLBACK_URL" envDefault:"http://localhost:8080/api/v1/auth/line/callback"`
-	LineClientID           string `env:"LINE_CLIENT_ID" envDefault:""`
-	LineSecretID           string `env:"LINE_SECRET_ID" envDefault:""`
-	LINE_WEB_CALLBACK_PATH string `env:"LINE_WEB_CALLBACK_PATH" envDefault:"/user/line/callback"`
+	LineLoginCallback      string `env:"LINE_CALLBACK_URL,required,notEmpty" envDefault:"http://localhost:8080/api/v1/auth/line/callback"`
+	LineClientID           string `env:"LINE_CLIENT_ID,required,notEmpty" envDefault:""`
+	LineSecretID           string `env:"LINE_SECRET_ID,required,notEmpty" envDefault:""`
+	LINE_WEB_CALLBACK_PATH string `env:"LINE_WEB_CALLBACK_PATH,required,notEmpty" envDefault:"/user/line/callback"`
 
-	LogFilePath       string `env:"LOG_PATH" envDefault:"/var/log/cjtim-backend-go.log"`
-	GCLOUD_CREDENTIAL string `env:"GCLOUD_CREDENTIAL" envDefault:"./configs/serviceAcc.json"`
+	BUCKET_NAME string `env:"BACKET_NAME,required,notEmpty" envDefault:""`
+
+	LogFilePath       string `env:"LOG_PATH,required,notEmpty" envDefault:"/var/log/be-friends-api.log"`
+	GCLOUD_CREDENTIAL string `env:"GCLOUD_CREDENTIAL,required,notEmpty" envDefault:"./configs/serviceAcc.json"`
 }
 
-func init() {
+func InitConfig() error {
 	log.Default().Println("Initial config...")
-	fp, err := os.Create("/var/log/cjtim-backend-go.log")
+	fp, err := os.Create("/var/log/be-friends-api.log")
 	if err != nil {
-		os.Setenv("LOG_PATH", "./log/cjtim-backend.go.log")
+		os.Setenv("LOG_PATH", "./log/be-friends-api.log")
 	}
 	defer fp.Close()
 
@@ -45,13 +47,18 @@ func init() {
 	if envFile == "" {
 		envFile = ".env"
 	}
-	_ = godotenv.Load(envFile)
+	err = godotenv.Load(envFile)
+	if err != nil {
+		return err
+	}
 	err = env.Parse(&cfg)
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 	Config = &cfg
 	origConfig = cfg
+	return nil
 }
 
 func RestoreConfigMock() {

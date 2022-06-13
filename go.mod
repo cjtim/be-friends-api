@@ -3,7 +3,8 @@ module github.com/cjtim/be-friends-api
 go 1.17
 
 require (
-	github.com/caarlos0/env v3.5.0+incompatible
+	cloud.google.com/go/storage v1.22.1
+	github.com/caarlos0/env/v6 v6.9.3
 	github.com/go-redis/redis/v9 v9.0.0-beta.1
 	github.com/gofiber/fiber/v2 v2.34.0
 	github.com/gofiber/jwt/v3 v3.2.12
@@ -14,6 +15,7 @@ require (
 	github.com/lib/pq v1.10.6
 	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e
+	google.golang.org/api v0.74.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
 
@@ -21,7 +23,6 @@ require (
 	cloud.google.com/go v0.100.2 // indirect
 	cloud.google.com/go/compute v1.6.0 // indirect
 	cloud.google.com/go/iam v0.3.0 // indirect
-	cloud.google.com/go/storage v1.22.1 // indirect
 	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
@@ -44,7 +45,6 @@ require (
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f // indirect
-	google.golang.org/api v0.74.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20220518221133-4f43b3371335 // indirect
 	google.golang.org/grpc v1.46.0 // indirect

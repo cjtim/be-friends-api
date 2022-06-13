@@ -6,16 +6,33 @@ import (
 	"io"
 	"log"
 	"net/url"
+	"strings"
 
 	"google.golang.org/api/iterator"
 
 	"cloud.google.com/go/storage"
-	"github.com/cjtim/cjtim-backend-go/configs"
+	"github.com/cjtim/be-friends-api/configs"
 	"github.com/google/uuid"
 	"google.golang.org/api/option"
 )
 
-var bucketName = configs.Config.GBucketName
+var bucketName = configs.Config.BUCKET_NAME
+
+// ------ Example -------
+// c, err := gstorage.GetClient()
+// if err != nil {
+// 	fmt.Println(err)
+// }
+
+// dat, err := os.ReadFile("./main.go")
+// if err != nil {
+// 	fmt.Println(err)
+// }
+// url, err := c.Upload("test/main.go", dat)
+// if err != nil {
+// 	fmt.Println(err)
+// }
+// fmt.Println(url)
 
 type c struct {
 	client *storage.Client
@@ -38,6 +55,7 @@ func GetClient() (*c, error) {
 }
 
 func (c *c) Upload(path string, byteData []byte) (string, error) {
+	path = strings.TrimPrefix(path, "/")
 	downloadToken := uuid.New().String()
 	wc := c.bucket.Object(path).NewWriter(context.TODO())
 	wc.Metadata = map[string]string{
