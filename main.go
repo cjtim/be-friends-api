@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -19,23 +20,30 @@ func main() {
 }
 
 func realMain() int {
+	err := configs.InitConfig()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	// Initial Global logger
 	logger := middlewares.InitZap()
 	defer logger.Sync()
 	zap.ReplaceGlobals(logger)
 
-	errDB := prepareDB()
+	// Connect DB
+	errDB, closeFn := prepareDB()
 	if errDB > 0 {
 		return errDB
 	}
+	defer closeFn() // Close all DB conn
 
+	// Prepare API route
 	app := prepareFiber()
 	setupCloseHandler(app)
 
+	// Start accept connection
 	listen := fmt.Sprintf(":%d", configs.Config.Port)
-	err := app.Listen(listen)
-	zap.L().Info("closing fiber", zap.Error(err))
-	zap.L().Info("closing redis conn", zap.Errors("redis", repository.CloseAll()))
-	zap.L().Info("closing postgres conn", zap.Error(repository.DB.Close()))
+	err = app.Listen(listen)
 	if err != nil {
 		zap.L().Error("fiber error", zap.Error(err))
 		return 1
@@ -43,29 +51,43 @@ func realMain() int {
 	return 0
 }
 
-func prepareDB() int {
+func prepareDB() (int, func()) {
 	_, err := repository.Connect()
 	if err != nil {
 		zap.L().Panic("error postgresql", zap.Error(err))
-		return 1
+		return 1, func() {}
 	}
 
 	_, err = repository.ConnectRedis(repository.DEFAULT)
 	if err != nil {
 		zap.L().Panic("error redis", zap.Error(err))
-		return 1
+		return 1, func() {
+			repository.DB.Close()
+		}
 	}
 	_, err = repository.ConnectRedis(repository.JWT)
 	if err != nil {
 		zap.L().Panic("error redis", zap.Error(err))
-		return 1
+		return 1, func() {
+			repository.DB.Close()
+			repository.RedisDefault.Client.Close()
+		}
 	}
 	_, err = repository.ConnectRedis(repository.CALLBACK)
 	if err != nil {
 		zap.L().Panic("error redis", zap.Error(err))
-		return 1
+		return 1, func() {
+			repository.DB.Close()
+			repository.RedisJwt.Client.Close()
+			repository.RedisDefault.Client.Close()
+		}
 	}
-	return 0
+	return 0, func() {
+		repository.DB.Close()
+		repository.RedisJwt.Client.Close()
+		repository.RedisDefault.Client.Close()
+		repository.RedisCallback.Client.Close()
+	}
 }
 
 func prepareFiber() *fiber.App {
