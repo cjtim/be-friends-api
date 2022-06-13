@@ -1,3 +1,4 @@
+# Builder
 FROM golang:1.17-alpine as builder
 WORKDIR $GOPATH/src/github.com/cjtim/be-friends-api
 
@@ -12,11 +13,10 @@ COPY . .
 ARG GOARCH
 ARG GOOS=linux
 ARG CGO_ENABLED=0
-ARG TAG
-ENV VERSION=${TAG}
 
 RUN go build -o main main.go
 
+# Production container
 FROM alpine:latest  
 RUN apk update && \
     apk add --no-cache \
@@ -24,5 +24,10 @@ RUN apk update && \
     libc6-compat
 WORKDIR /root/
 COPY --from=builder /go/src/github.com/cjtim/be-friends-api .
+
 EXPOSE 8080
+
+ARG TAG
+ENV VERSION=${TAG}
+
 CMD ["/root/main"]
