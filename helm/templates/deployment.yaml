@@ -48,9 +48,18 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
+            - name: GCLOUD_CREDENTIAL
+              value: "/tmp/k8s-secrets/gstorage.json"
           {{- with .Values.extraEnvs }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          volumeMounts:
+          {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+            - mountPath: "/tmp/k8s-secrets"
+              name: gstorage
+              readOnly: true
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -61,5 +70,12 @@ spec:
       {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: gstorage
+          secret:
+            secretName: {{ include "helm.fullname" . }}-gstorage
+      {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

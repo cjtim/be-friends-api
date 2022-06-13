@@ -24,7 +24,16 @@ extraEnvs:
   - name: DATABASE_URL
     value: postgresql://user:password@url:5432/database?sslmode=disable
   - name: REDIS_URL
-    value: 
+    value: ""
+  - name: BACKET_NAME
+    value: ""
+
+volumeMounts: []
+
+volumes: []
+
+gstorageJson: |
+  your google cloud service account .json here
 
 serviceAccount:
   # Specifies whether a service account should be created
