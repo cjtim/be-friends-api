@@ -11,17 +11,18 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:$(POSTGRES_PORT)/be-friend
 BACKET_NAME=
 GCLOUD_CREDENTIAL=
 
-pre-run:
+start-redis:
 	docker run --rm -d --name $(REDIS_CONTAINER) -p $(REDIS_PORT):6379 redis:7-alpine || true
 
+start-db:
 	docker run --rm -d --name $(POSTGRES_CONTAINER) -p $(POSTGRES_PORT):5432 \
 	-e POSTGRES_USER=postgres \
 	-e POSTGRES_PASSWORD=postgres \
 	-e POSTGRES_DB=be-friends \
 	-v $(PWD)/tools/db:/docker-entrypoint-initdb.d \
-	postgres:14.3-alpine && sleep 5 || true
+	postgres:14.3-alpine && sleep 3 || true
 
-run: pre-run
+run: start-redis start-db
 	REDIS_URL=localhost:$(REDIS_PORT) \
 	DATABASE_URL=$(DATABASE_URL) \
 	LINE_CLIENT_ID=$(LINE_CLIENT_ID) \

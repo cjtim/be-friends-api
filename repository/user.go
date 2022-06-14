@@ -21,26 +21,22 @@ type User struct {
 	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
 }
 
-// func (u *UserImpl) List() ([]User, error) {
-// 	users := []User{}
-// 	rows := DB.QueryRow(`SELECT * FROM "user"`)
-// 	err := rows.Scan(&users)
-// 	if err != nil {
-// 		return []User{}, err
-// 	}
-// 	return users, err
-// }
+type UserTag struct {
+	User
+	Tags []Tag `json:"tags"`
+}
 
-// func (u *UserImpl) GetById(id uuid.UUID) (User, error) {
-// 	stm := `SELECT * FROM "user" WHERE id = $1`
-// 	row, err := DB.Queryx(stm, id)
-// 	if err != nil {
-// 		return User{}, err
-// 	}
-// 	result := User{}
-// 	err = row.StructScan(&result)
-// 	return result, err
-// }
+func (t *UserImpl) GetUserWithTags(userID uuid.UUID) (userTag UserTag, err error) {
+	// user := User{}
+	stm := `SELECT * FROM "user" WHERE id = $1`
+	err = DB.Get(&userTag.User, stm, userID)
+	if err != nil {
+		return
+	}
+	tags, err := TagUserRepo.GetTagsByUserID(userID)
+	userTag.Tags = tags
+	return
+}
 
 func (u *UserImpl) UpsertLine(user User) (User, error) {
 	result := User{}
