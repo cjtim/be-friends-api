@@ -28,3 +28,22 @@ func (t *TagImpl) Create(name string, description *string, isInternal *bool) (ta
 	err = DB.Get(&tag, stm, name, description, isInternal)
 	return
 }
+
+func (t *TagImpl) Update(id int, name string, description *string, isInternal *bool) (tag Tag, err error) {
+	stm := `
+		UPDATE "tag" 
+		SET 
+			name = $2, 
+			description = $3, 
+			is_internal = $4
+		WHERE id = $1
+		RETURNING *
+	`
+	err = DB.Get(&tag, stm, id, name, description, isInternal)
+	return
+}
+
+func (t *TagImpl) Delete(id int) (err error) {
+	_, err = DB.Query(`DELETE "tag" WHERE id = $1`, id)
+	return
+}

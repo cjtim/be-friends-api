@@ -3,7 +3,7 @@ package user
 import (
 	"database/sql"
 
-	"github.com/cjtim/be-friends-api/internal/user"
+	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
@@ -17,7 +17,7 @@ func UserInfo(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.ErrBadRequest
 	}
-	tags, err := user.GetUserInfoById(userId)
+	tags, err := repository.UserRepo.GetUserWithTags(userId)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return fiber.ErrBadRequest

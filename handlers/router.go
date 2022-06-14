@@ -5,6 +5,7 @@ import (
 
 	"github.com/cjtim/be-friends-api/handlers/auth"
 	"github.com/cjtim/be-friends-api/handlers/middlewares"
+	"github.com/cjtim/be-friends-api/handlers/tag"
 	"github.com/cjtim/be-friends-api/handlers/user"
 	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
@@ -44,5 +45,11 @@ func Route(r *fiber.App) {
 	authRoute.Get("/line/jwt", auth.LineGetJwt)
 
 	userRoute := v1.Group("/user")
-	userRoute.Get("/info", user.UserInfo)
+	userRoute.Get("", user.UserInfo)
+
+	tagRoute := v1.Group("/tag")
+	tagRoute.Get("", tag.TagList)
+	tagRoute.Post("", tag.TagCreate)
+	tagRoute.Put("", tag.TagUpdate)
+	tagRoute.Delete("/:id", tag.TagDelete)
 }
