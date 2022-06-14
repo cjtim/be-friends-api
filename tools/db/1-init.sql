@@ -24,6 +24,7 @@ CREATE TABLE "tag" (
     "id" SERIAL NOT NULL,
     "name" varchar(255) NOT NULL,
     "description" varchar(255),
+    "is_internal"  BOOL DEFAULT FALSE NOT NULL,
     "created_at" timestamp NOT NULL DEFAULT NOW(),
     "updated_at" timestamp NOT NULL DEFAULT NOW(),
 
@@ -65,7 +66,7 @@ CREATE INDEX IDX01_id_pet ON "pet" (id);
 CREATE INDEX IDX02_name_pet ON "pet" (name);
 
 ------------------------------
--- tag_user Table
+-- tag_pet Table
 -- 1 to 1 tag and user
 ------------------------------
 CREATE TABLE "tag_pet" (
@@ -75,4 +76,16 @@ CREATE TABLE "tag_pet" (
     CONSTRAINT "PK_pet_tag_id" PRIMARY KEY (pet_id, tag_id),
     CONSTRAINT "FK_pet" FOREIGN KEY (pet_id) REFERENCES "pet" ("id"),
     CONSTRAINT "FK_tag" FOREIGN KEY (tag_id) REFERENCES "tag" ("id")
+);
+
+------------------------------
+-- pic_pet Table
+-- 1 to 1 tag and url
+------------------------------
+CREATE TABLE "pic_pet" (
+    pet_id SERIAL NOT NULL,
+    picture_url TEXT NOT NULL,
+
+    CONSTRAINT "PK_pet_id_picture_url" PRIMARY KEY (pet_id, picture_url),
+    CONSTRAINT "FK_pet" FOREIGN KEY (pet_id) REFERENCES "pet" ("id")
 );
