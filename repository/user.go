@@ -26,15 +26,15 @@ type UserTag struct {
 	Tags []Tag `json:"tags"`
 }
 
-func (t *UserImpl) GetUserWithTags(userID uuid.UUID) (tagUser TagUser, err error) {
+func (t *UserImpl) GetUserWithTags(userID uuid.UUID) (userTag UserTag, err error) {
 	// user := User{}
 	stm := `SELECT * FROM "user" WHERE id = $1`
-	err = DB.Get(&tagUser.User, stm, userID)
+	err = DB.Get(&userTag.User, stm, userID)
 	if err != nil {
 		return
 	}
 	tags, err := TagUserRepo.GetTagsByUserID(userID)
-	tagUser.Tags = tags
+	userTag.Tags = tags
 	return
 }
 
