@@ -32,7 +32,7 @@ func AuthRegister(c *fiber.Ctx) error {
 	}
 
 	// New JWT token
-	_, token, err := auth.GetNewToken(&newUser)
+	_, token, err := auth.GetNewToken(newUser.ID)
 	if err != nil {
 		return c.SendStatus(http.StatusInternalServerError)
 	}
@@ -50,7 +50,7 @@ func AuthLogin(c *fiber.Ctx) error {
 	}
 
 	// New JWT token
-	_, token, err := auth.GetNewToken(&u)
+	_, token, err := auth.GetNewToken(u.ID)
 	if err != nil {
 		return c.SendStatus(http.StatusInternalServerError)
 	}

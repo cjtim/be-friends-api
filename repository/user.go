@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"encoding/json"
 	"errors"
 	"time"
 
@@ -23,18 +24,26 @@ type User struct {
 
 type UserTag struct {
 	User
-	Tags []Tag `json:"tags"`
+	Tags json.RawMessage `json:"tags" db:"tags"`
 }
 
 func (t *UserImpl) GetUserWithTags(userID uuid.UUID) (userTag UserTag, err error) {
-	// user := User{}
-	stm := `SELECT * FROM "user" WHERE id = $1`
-	err = DB.Get(&userTag.User, stm, userID)
-	if err != nil {
-		return
-	}
-	tags, err := TagUserRepo.GetTagsByUserID(userID)
-	userTag.Tags = tags
+	stm := `
+	SELECT
+		u.*,
+		(
+			SELECT json_agg(tag)
+			FROM (
+				SELECT t.id as id, t.name as name
+				FROM "tag_user" tu
+				INNER JOIN "tag" t on t.id = tu.tag_id 
+				WHERE tu.user_id = u.id AND t.is_internal = FALSE
+			) tag
+		) AS tags
+	FROM "user" u
+	WHERE u.id = $1
+	`
+	err = DB.Get(&userTag, stm, userID)
 	return
 }
 

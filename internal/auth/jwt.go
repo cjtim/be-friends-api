@@ -11,6 +11,7 @@ import (
 	"github.com/cjtim/be-friends-api/internal/utils"
 	"github.com/cjtim/be-friends-api/repository"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -27,7 +28,11 @@ type LineToken struct {
 	TokenType    string `json:"token_type"`
 }
 
-func GetNewToken(u *repository.User) (*jwt.Token, string, error) {
+func GetNewToken(userID uuid.UUID) (*jwt.Token, string, error) {
+	u, err := repository.UserRepo.GetUserWithTags(userID)
+	if err != nil {
+		return nil, "", err
+	}
 	// Create the Claims
 	claims := jwt.MapClaims{
 		"id":          u.ID,
@@ -35,6 +40,9 @@ func GetNewToken(u *repository.User) (*jwt.Token, string, error) {
 		"email":       u.Email,
 		"line_uid":    u.LineUid,
 		"picture_url": u.PictureURL,
+		"tags":        u.Tags,
+		"updated_at":  u.UpdatedAt,
+		"created_at":  u.CreatedAt,
 		"exp":         time.Now().Add(TOKEN_EXPIRE).Unix(),
 	}
 
@@ -122,13 +130,6 @@ func Callback(code string) (string, error) {
 	}
 
 	// 3. Create JWT
-	userInfo := repository.User{
-		ID:         userDB.ID,
-		Name:       profile.Name,
-		Email:      userDB.Email,
-		LineUid:    userDB.LineUid,
-		PictureURL: userDB.PictureURL,
-	}
-	_, jwtToken, err := GetNewToken(&userInfo)
+	_, jwtToken, err := GetNewToken(userDB.ID)
 	return jwtToken, err
 }
