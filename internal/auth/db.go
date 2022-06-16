@@ -8,7 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (p *LineProfile) createLineUser() (r.User, error) {
+func (p *lineProfile) createLineUser() (r.User, error) {
 	return r.UserRepo.UpsertLine(r.User{
 		Name:       p.Name,
 		PictureURL: &p.Picture,

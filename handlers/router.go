@@ -6,7 +6,6 @@ import (
 	"github.com/cjtim/be-friends-api/handlers/auth"
 	"github.com/cjtim/be-friends-api/handlers/middlewares"
 	"github.com/cjtim/be-friends-api/handlers/tag"
-	"github.com/cjtim/be-friends-api/handlers/user"
 	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
 )
@@ -36,20 +35,21 @@ func Route(r *fiber.App) {
 	})
 
 	authRoute := v1.Group("/auth")
-	authRoute.Get("/me", middlewares.GetJWTMiddleware, auth.Me)
-	authRoute.Get("/logout", auth.Logout)
-	authRoute.Post("/login", auth.AuthLogin)
-	authRoute.Post("/register", auth.AuthRegister)
-	authRoute.Get("/line", auth.LoginLine)
-	authRoute.Get("/line/callback", auth.LineCallback)
-	authRoute.Get("/line/jwt", auth.LineGetJwt)
-
-	userRoute := v1.Group("/user")
-	userRoute.Get("", user.UserInfo)
+	{
+		authRoute.Get("/me", middlewares.GetJWTMiddleware, auth.Me)
+		authRoute.Get("/logout", auth.Logout)
+		authRoute.Post("/login", auth.AuthLogin)
+		authRoute.Post("/register", auth.AuthRegister)
+		authRoute.Get("/line", auth.LoginLine)
+		authRoute.Get("/line/callback", auth.LineCallback)
+		authRoute.Get("/line/jwt", auth.LineGetJwt)
+	}
 
 	tagRoute := v1.Group("/tag")
-	tagRoute.Get("", tag.TagList)
-	tagRoute.Post("", tag.TagCreate)
-	tagRoute.Put("", tag.TagUpdate)
-	tagRoute.Delete("/:id", tag.TagDelete)
+	{
+		tagRoute.Get("", tag.TagList)
+		tagRoute.Post("", tag.TagCreate)
+		tagRoute.Put("", tag.TagUpdate)
+		tagRoute.Delete("/:id", tag.TagDelete)
+	}
 }

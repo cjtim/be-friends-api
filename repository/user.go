@@ -22,28 +22,38 @@ type User struct {
 	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
 }
 
-type UserTag struct {
+type UserExtended struct {
 	User
-	Tags json.RawMessage `json:"tags" db:"tags"`
+	// Custome fields
+	Tags    *json.RawMessage `json:"tags" db:"tags"`
+	IsAdmin *bool            `json:"is_admin" db:"is_admin"`
 }
 
-func (t *UserImpl) GetUserWithTags(userID uuid.UUID) (userTag UserTag, err error) {
+func (t *UserImpl) GetUserExtended(userID uuid.UUID) (user UserExtended, err error) {
 	stm := `
 	SELECT
-		u.*,
+		u.id, u.name, u.email, u.line_uid, u.picture_url, u.created_at, u.updated_at,
 		(
-			SELECT json_agg(tag)
+			SELECT COALESCE(json_agg(tag), '[]')
 			FROM (
 				SELECT t.id as id, t.name as name
 				FROM "tag_user" tu
 				INNER JOIN "tag" t on t.id = tu.tag_id 
 				WHERE tu.user_id = u.id AND t.is_internal = FALSE
 			) tag
-		) AS tags
+		) AS tags,
+		(
+			SELECT EXISTS (
+				SELECT 1 
+				FROM "tag_user" tu
+				INNER JOIN "tag" t ON t.id = tu.tag_id 
+				WHERE t.name = 'Admin' AND tu.user_id = u.id 
+			)
+		) AS is_admin
 	FROM "user" u
 	WHERE u.id = $1
 	`
-	err = DB.Get(&userTag, stm, userID)
+	err = DB.Get(&user, stm, userID)
 	return
 }
 

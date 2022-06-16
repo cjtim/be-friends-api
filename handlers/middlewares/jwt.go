@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/cjtim/be-friends-api/configs"
+	"github.com/cjtim/be-friends-api/internal/auth"
 	"github.com/cjtim/be-friends-api/internal/utils"
 	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
@@ -29,5 +30,6 @@ var GetJWTMiddleware = func(c *fiber.Ctx) error {
 	}
 	return jwtware.New(jwtware.Config{
 		SigningKey: []byte(configs.Config.JWTSecret),
+		Claims:     &auth.CustomClaims{},
 	})(c)
 }
