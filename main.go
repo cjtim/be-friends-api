@@ -31,11 +31,12 @@ func realMain() int {
 	zap.ReplaceGlobals(logger)
 
 	// Connect DB
-	errDB, closeFn := prepareDB()
-	if errDB > 0 {
-		return errDB
-	}
+	closeFn, err := repository.PrepareDB()
 	defer closeFn() // Close all DB conn
+	if err != nil {
+		zap.L().Error("prepare db error", zap.Error(err))
+		return 1
+	}
 
 	// Prepare API route
 	app := prepareFiber()
@@ -49,45 +50,6 @@ func realMain() int {
 		return 1
 	}
 	return 0
-}
-
-func prepareDB() (int, func()) {
-	_, err := repository.Connect()
-	if err != nil {
-		zap.L().Panic("error postgresql", zap.Error(err))
-		return 1, func() {}
-	}
-
-	_, err = repository.ConnectRedis(repository.DEFAULT)
-	if err != nil {
-		zap.L().Panic("error redis", zap.Error(err))
-		return 1, func() {
-			repository.DB.Close()
-		}
-	}
-	_, err = repository.ConnectRedis(repository.JWT)
-	if err != nil {
-		zap.L().Panic("error redis", zap.Error(err))
-		return 1, func() {
-			repository.DB.Close()
-			repository.RedisDefault.Client.Close()
-		}
-	}
-	_, err = repository.ConnectRedis(repository.CALLBACK)
-	if err != nil {
-		zap.L().Panic("error redis", zap.Error(err))
-		return 1, func() {
-			repository.DB.Close()
-			repository.RedisJwt.Client.Close()
-			repository.RedisDefault.Client.Close()
-		}
-	}
-	return 0, func() {
-		repository.DB.Close()
-		repository.RedisJwt.Client.Close()
-		repository.RedisDefault.Client.Close()
-		repository.RedisCallback.Client.Close()
-	}
 }
 
 func prepareFiber() *fiber.App {

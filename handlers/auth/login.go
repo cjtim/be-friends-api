@@ -7,19 +7,19 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type LoginBody struct {
+type loginBody struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-type RegisterBody struct {
+type registerBody struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
 func AuthRegister(c *fiber.Ctx) error {
-	register := RegisterBody{}
+	register := registerBody{}
 	err := c.BodyParser(&register)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).SendString("Cannot parse body")
@@ -41,9 +41,11 @@ func AuthRegister(c *fiber.Ctx) error {
 }
 
 func AuthLogin(c *fiber.Ctx) error {
-	credential := LoginBody{}
-	c.BodyParser(&credential)
-
+	credential := loginBody{}
+	err := c.BodyParser(&credential)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).SendString("Cannot parse body")
+	}
 	u, err := auth.Login(credential.Email, credential.Password)
 	if err != nil {
 		return c.SendStatus(http.StatusBadRequest)
