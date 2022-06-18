@@ -3,6 +3,7 @@ package auth
 import (
 	"net/http"
 
+	"github.com/cjtim/be-friends-api/configs"
 	"github.com/cjtim/be-friends-api/internal/auth"
 	"github.com/gofiber/fiber/v2"
 )
@@ -32,10 +33,18 @@ func AuthRegister(c *fiber.Ctx) error {
 	}
 
 	// New JWT token
-	_, token, err := auth.GetNewToken(newUser.ID)
+	j, token, err := auth.GetNewToken(newUser.ID)
 	if err != nil {
 		return c.SendStatus(http.StatusInternalServerError)
 	}
+	cliams := j.Claims.(*auth.CustomClaims)
+
+	c.Cookie(&fiber.Cookie{
+		Name:    configs.Config.JWTCookies,
+		Value:   token,
+		Path:    "/",
+		Expires: cliams.ExpiresAt.Local(),
+	})
 
 	return c.Status(http.StatusOK).SendString(token)
 }
@@ -52,10 +61,10 @@ func AuthLogin(c *fiber.Ctx) error {
 	}
 
 	// New JWT token
-	_, token, err := auth.GetNewToken(u.ID)
+	j, token, err := auth.GetNewToken(u.ID)
 	if err != nil {
 		return c.SendStatus(http.StatusInternalServerError)
 	}
-
+	auth.SetCookie(c, token, j.Claims)
 	return c.Status(http.StatusOK).SendString(token)
 }

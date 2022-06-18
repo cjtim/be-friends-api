@@ -45,6 +45,16 @@ func GetUserExtendedFromFiberCtx(c *fiber.Ctx) (*CustomClaims, error) {
 	return nil, errors.New("cannot get user")
 }
 
+func SetCookie(c *fiber.Ctx, token string, claim jwt.Claims) {
+	cliams := claim.(CustomClaims)
+	c.Cookie(&fiber.Cookie{
+		Name:    configs.Config.JWTCookies,
+		Value:   token,
+		Path:    "/",
+		Expires: cliams.ExpiresAt.Local(),
+	})
+}
+
 func GetNewToken(userID uuid.UUID) (*jwt.Token, string, error) {
 	u, err := repository.UserRepo.GetUserExtended(userID)
 	if err != nil {

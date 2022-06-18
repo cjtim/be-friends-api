@@ -10,6 +10,7 @@ import (
 	"github.com/cjtim/be-friends-api/configs"
 	"github.com/cjtim/be-friends-api/internal/utils"
 	"github.com/cjtim/be-friends-api/repository"
+	"github.com/golang-jwt/jwt/v4"
 	"go.uber.org/zap"
 )
 
@@ -116,28 +117,28 @@ func getJWT(code string) (string, error) {
 	return userInfo.IDToken, err
 }
 
-func Callback(code string) (string, error) {
+func Callback(code string) (*jwt.Token, string, error) {
 	// 1. Get profile from LINE
 	token, err := getJWT(code)
 	if err != nil {
 		zap.L().Error("error line get jwt", zap.String("code", code), zap.Error(err))
-		return "", err
+		return nil, "", err
 	}
 
 	profile, err := getProfile(token)
 	if err != nil {
 		zap.L().Error("error line get profile", zap.String("token", token), zap.Error(err))
-		return "", err
+		return nil, "", err
 	}
 
 	// 2. Update database
 	userDB, err := profile.createLineUser()
 	if err != nil {
 		zap.L().Error("error create user line", zap.Any("profile", profile), zap.Error(err))
-		return "", err
+		return nil, "", err
 	}
 
 	// 3. Create JWT
-	_, jwtToken, err := GetNewToken(userDB.ID)
-	return jwtToken, err
+	claims, jwtToken, err := GetNewToken(userDB.ID)
+	return claims, jwtToken, err
 }
