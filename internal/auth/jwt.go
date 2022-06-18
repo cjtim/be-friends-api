@@ -2,40 +2,87 @@ package auth
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"net/http"
-	"net/url"
+	"errors"
 	"time"
 
 	"github.com/cjtim/be-friends-api/configs"
-	"github.com/cjtim/be-friends-api/internal/utils"
 	"github.com/cjtim/be-friends-api/repository"
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
-	"go.uber.org/zap"
+	"github.com/google/uuid"
 )
 
 var (
-	TOKEN_EXPIRE = time.Hour * 72
+	TOKEN_EXPIRE  = time.Hour * 72
+	FiberLocalKey = "user"
 )
 
-type LineToken struct {
-	AccessToken  string `json:"access_token"`
-	ExpiresIn    int    `json:"expires_in"`
-	IDToken      string `json:"id_token"`
-	RefreshToken string `json:"refresh_token"`
-	Scope        string `json:"scope"`
-	TokenType    string `json:"token_type"`
+type CustomClaims struct {
+	jwt.RegisteredClaims
+
+	ID         uuid.UUID `json:"id" db:"id"`
+	Name       string    `json:"name" db:"name"`
+	Email      *string   `json:"email" db:"email"`
+	Password   *string   `json:"password" db:"password"`
+	LineUid    *string   `json:"line_uid" db:"line_uid"`
+	PictureURL *string   `json:"picture_url" db:"picture_url"`
+	CreatedAt  time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
+
+	// Custome fields
+	Tags    json.RawMessage `json:"tags" db:"tags"`
+	IsAdmin *bool           `json:"is_admin" db:"is_admin"`
 }
 
-func GetNewToken(u *repository.User) (*jwt.Token, string, error) {
+func GetUserExtendedFromFiberCtx(c *fiber.Ctx) (*CustomClaims, error) {
+	user, ok := c.Locals(FiberLocalKey).(*jwt.Token)
+	if ok {
+		claims, ok := user.Claims.(*CustomClaims)
+		if ok {
+			return claims, nil
+		}
+	}
+	return nil, errors.New("cannot get user")
+}
+
+func RemoveCookie(c *fiber.Ctx) {
+	c.Cookie(&fiber.Cookie{
+		Name:    configs.Config.JWTCookies,
+		Value:   "",
+		Path:    "/",
+		Expires: time.Now(),
+	})
+}
+
+func SetCookie(c *fiber.Ctx, token string, claim jwt.Claims) {
+	cliams := claim.(CustomClaims)
+	c.Cookie(&fiber.Cookie{
+		Name:    configs.Config.JWTCookies,
+		Value:   token,
+		Path:    "/",
+		Expires: cliams.ExpiresAt.Local(),
+	})
+}
+
+func GetNewToken(userID uuid.UUID) (*jwt.Token, string, error) {
+	u, err := repository.UserRepo.GetUserExtended(userID)
+	if err != nil {
+		return nil, "", err
+	}
 	// Create the Claims
-	claims := jwt.MapClaims{
-		"id":          u.ID,
-		"name":        u.Name,
-		"email":       u.Email,
-		"line_uid":    u.LineUid,
-		"picture_url": u.PictureURL,
-		"exp":         time.Now().Add(TOKEN_EXPIRE).Unix(),
+	claims := CustomClaims{
+		ID:         u.ID,
+		Name:       u.Name,
+		Email:      u.Email,
+		LineUid:    u.LineUid,
+		PictureURL: u.PictureURL,
+		Tags:       *u.Tags,
+		UpdatedAt:  u.UpdatedAt,
+		CreatedAt:  u.CreatedAt,
+		IsAdmin:    u.IsAdmin,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(TOKEN_EXPIRE)),
+		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -47,88 +94,4 @@ func GetNewToken(u *repository.User) (*jwt.Token, string, error) {
 	}
 	err = repository.RedisJwt.AddJwt(t, TOKEN_EXPIRE)
 	return token, t, err
-}
-
-func GetLoginURL(clientURL string) string {
-	url := http.Request{
-		URL: &url.URL{
-			Scheme: "https",
-			Host:   "access.line.me",
-			Path:   "/oauth2/v2.1/authorize",
-		},
-	}
-
-	state := utils.RandomSeq(10)
-	err := repository.RedisCallback.AddCallback(state, clientURL)
-	if err != nil {
-		zap.L().Error("error redis - cannot save callback", zap.String("clientURL", clientURL), zap.Error(err))
-		return ""
-	}
-
-	q := url.URL.Query()
-	q.Add("state", state)
-	q.Add("scope", "profile openid")
-	q.Add("response_type", "code")
-	q.Add("redirect_uri", configs.Config.LineLoginCallback)
-	q.Add("client_id", configs.Config.LineClientID)
-	url.URL.RawQuery = q.Encode()
-	return url.URL.String()
-}
-
-func getJWT(code string) (string, error) {
-	resp, err := http.PostForm("https://api.line.me/oauth2/v2.1/token", url.Values{
-		"grant_type":    {"authorization_code"},
-		"code":          {code},
-		"redirect_uri":  {configs.Config.LineLoginCallback},
-		"client_id":     {configs.Config.LineClientID},
-		"client_secret": {configs.Config.LineSecretID},
-	})
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-
-	userInfo := LineToken{}
-	err = json.Unmarshal(body, &userInfo)
-	if err != nil {
-		return "", err
-	}
-	return userInfo.IDToken, err
-}
-
-func Callback(code string) (string, error) {
-	// 1. Get profile from LINE
-	token, err := getJWT(code)
-	if err != nil {
-		zap.L().Error("error line get jwt", zap.String("code", code), zap.Error(err))
-		return "", err
-	}
-
-	profile, err := getProfile(token)
-	if err != nil {
-		zap.L().Error("error line get profile", zap.String("token", token), zap.Error(err))
-		return "", err
-	}
-
-	// 2. Update database
-	userDB, err := profile.createLineUser()
-	if err != nil {
-		zap.L().Error("error create user line", zap.Any("profile", profile), zap.Error(err))
-		return "", err
-	}
-
-	// 3. Create JWT
-	userInfo := repository.User{
-		ID:         userDB.ID,
-		Name:       profile.Name,
-		Email:      userDB.Email,
-		LineUid:    userDB.LineUid,
-		PictureURL: userDB.PictureURL,
-	}
-	_, jwtToken, err := GetNewToken(&userInfo)
-	return jwtToken, err
 }

@@ -52,10 +52,10 @@ func LineGetJwt(c *fiber.Ctx) error {
 		return c.SendStatus(http.StatusBadRequest)
 	}
 
-	jwtToken, err := auth.Callback(code)
+	j, jwtToken, err := auth.Callback(code)
 	if err != nil {
 		return c.SendStatus(http.StatusInternalServerError)
 	}
-
+	auth.SetCookie(c, jwtToken, j.Claims)
 	return c.SendString(jwtToken)
 }

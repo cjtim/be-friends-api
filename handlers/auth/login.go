@@ -3,23 +3,24 @@ package auth
 import (
 	"net/http"
 
+	"github.com/cjtim/be-friends-api/configs"
 	"github.com/cjtim/be-friends-api/internal/auth"
 	"github.com/gofiber/fiber/v2"
 )
 
-type LoginBody struct {
+type loginBody struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-type RegisterBody struct {
+type registerBody struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
 func AuthRegister(c *fiber.Ctx) error {
-	register := RegisterBody{}
+	register := registerBody{}
 	err := c.BodyParser(&register)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).SendString("Cannot parse body")
@@ -32,28 +33,38 @@ func AuthRegister(c *fiber.Ctx) error {
 	}
 
 	// New JWT token
-	_, token, err := auth.GetNewToken(&newUser)
+	j, token, err := auth.GetNewToken(newUser.ID)
 	if err != nil {
 		return c.SendStatus(http.StatusInternalServerError)
 	}
+	cliams := j.Claims.(*auth.CustomClaims)
+
+	c.Cookie(&fiber.Cookie{
+		Name:    configs.Config.JWTCookies,
+		Value:   token,
+		Path:    "/",
+		Expires: cliams.ExpiresAt.Local(),
+	})
 
 	return c.Status(http.StatusOK).SendString(token)
 }
 
 func AuthLogin(c *fiber.Ctx) error {
-	credential := LoginBody{}
-	c.BodyParser(&credential)
-
+	credential := loginBody{}
+	err := c.BodyParser(&credential)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).SendString("Cannot parse body")
+	}
 	u, err := auth.Login(credential.Email, credential.Password)
 	if err != nil {
 		return c.SendStatus(http.StatusBadRequest)
 	}
 
 	// New JWT token
-	_, token, err := auth.GetNewToken(&u)
+	j, token, err := auth.GetNewToken(u.ID)
 	if err != nil {
 		return c.SendStatus(http.StatusInternalServerError)
 	}
-
+	auth.SetCookie(c, token, j.Claims)
 	return c.Status(http.StatusOK).SendString(token)
 }

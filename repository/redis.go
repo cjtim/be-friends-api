@@ -53,20 +53,6 @@ func IsRedisReady() error {
 	return RedisCallback.Client.Set(context.Background(), "test", "test", time.Second*1).Err()
 }
 
-func CloseAll() []error {
-	errs := []error{}
-	if RedisDefault.Client != nil {
-		errs = append(errs, RedisDefault.Client.Close())
-	}
-	if RedisJwt.Client != nil {
-		errs = append(errs, RedisJwt.Client.Close())
-	}
-	if RedisCallback.Client != nil {
-		errs = append(errs, RedisCallback.Client.Close())
-	}
-	return errs
-}
-
 type defaultImpl struct {
 	Client *redis.Client
 }

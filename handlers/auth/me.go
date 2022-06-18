@@ -1,13 +1,15 @@
 package auth
 
 import (
+	"github.com/cjtim/be-friends-api/internal/auth"
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v4"
 )
 
 // Me - JWT claim infomation
 func Me(c *fiber.Ctx) error {
-	user := c.Locals("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
+	claims, err := auth.GetUserExtendedFromFiberCtx(c)
+	if err != nil {
+		return err
+	}
 	return c.JSON(claims)
 }

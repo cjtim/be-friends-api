@@ -5,13 +5,14 @@ import (
 	"strings"
 
 	"github.com/cjtim/be-friends-api/configs"
+	"github.com/cjtim/be-friends-api/internal/auth"
 	"github.com/cjtim/be-friends-api/internal/utils"
 	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
 	jwtware "github.com/gofiber/jwt/v3"
 )
 
-var GetJWTMiddleware = func(c *fiber.Ctx) error {
+var JWTMiddleware = func(c *fiber.Ctx) error {
 	headers := utils.HeadersToMapStr(c)
 	authorization := headers[configs.AuthorizationHeader]
 	token := strings.Replace(authorization, "Bearer ", "", 1)
@@ -29,5 +30,24 @@ var GetJWTMiddleware = func(c *fiber.Ctx) error {
 	}
 	return jwtware.New(jwtware.Config{
 		SigningKey: []byte(configs.Config.JWTSecret),
+		Claims:     &auth.CustomClaims{},
+		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			auth.RemoveCookie(c)
+			return c.Next()
+		},
 	})(c)
+}
+
+func AuthRoleIsAdmin(isAdmin bool) func(c *fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
+		claim, err := auth.GetUserExtendedFromFiberCtx(c)
+		if err != nil {
+			return err
+		}
+		canPass := claim.IsAdmin != nil && *claim.IsAdmin == isAdmin
+		if canPass {
+			return c.Next()
+		}
+		return fiber.ErrUnauthorized
+	}
 }
