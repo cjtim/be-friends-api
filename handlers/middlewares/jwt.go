@@ -31,6 +31,10 @@ var JWTMiddleware = func(c *fiber.Ctx) error {
 	return jwtware.New(jwtware.Config{
 		SigningKey: []byte(configs.Config.JWTSecret),
 		Claims:     &auth.CustomClaims{},
+		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			auth.RemoveCookie(c)
+			return c.Next()
+		},
 	})(c)
 }
 
