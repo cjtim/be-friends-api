@@ -12,7 +12,11 @@ import (
 	"github.com/cjtim/be-friends-api/handlers/middlewares"
 	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/swagger"
+
 	"go.uber.org/zap"
+
+	_ "github.com/cjtim/be-friends-api/docs"
 )
 
 func main() {
@@ -52,11 +56,27 @@ func realMain() int {
 	return 0
 }
 
+// @title Be Friends API
+// @version 1.0
+
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+
+// @BasePath /
 func prepareFiber() *fiber.App {
 	app := fiber.New(fiber.Config{
 		ErrorHandler: middlewares.ErrorHandling,
 		BodyLimit:    100 * 1024 * 1024, // Limit file size to 100MB
 	})
+
+	app.Get("/swagger/*", swagger.HandlerDefault)
+	app.Get("/swagger/*", swagger.New(swagger.Config{
+		URL:          "/doc.json",
+		DeepLinking:  true,
+		DocExpansion: "none",
+	}))
+
 	app.Use(middlewares.Cors())
 	app.Use(middlewares.RequestLog())
 	handlers.Route(app) // setup router path
