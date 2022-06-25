@@ -70,9 +70,9 @@ func prepareFiber() *fiber.App {
 		BodyLimit:    100 * 1024 * 1024, // Limit file size to 100MB
 	})
 
-	app.Get("/swagger/*", swagger.HandlerDefault)
-	app.Get("/swagger/*", swagger.New(swagger.Config{
-		URL:          "/doc.json",
+	app.Get("/api/swagger/*", swagger.HandlerDefault)
+	app.Get("/api/swagger/*", swagger.New(swagger.Config{
+		URL:          "/api/doc.json",
 		DeepLinking:  true,
 		DocExpansion: "none",
 	}))
