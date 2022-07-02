@@ -2,10 +2,10 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE "user" (
     "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-    "name" varchar(255) NOT NULL,
-    "email" varchar(255),
-    "password" varchar(255),
-    "line_uid" varchar(255),
+    "name" VARCHAR(255) NOT NULL,
+    "email" VARCHAR(255),
+    "password" VARCHAR(255),
+    "line_uid" VARCHAR(255),
     "picture_url" text,
     "created_at" timestamp NOT NULL DEFAULT NOW(),
     "updated_at" timestamp NOT NULL DEFAULT NOW(),
@@ -22,8 +22,8 @@ CREATE INDEX IDX01_id_user ON "user" (id);
 ------------------------------
 CREATE TABLE "tag" (
     "id" SERIAL NOT NULL,
-    "name" varchar(255) NOT NULL,
-    "description" varchar(255),
+    "name" VARCHAR(255) NOT NULL,
+    "description" VARCHAR(255),
     "is_internal"  BOOL DEFAULT FALSE NOT NULL,
     "created_at" timestamp NOT NULL DEFAULT NOW(),
     "updated_at" timestamp NOT NULL DEFAULT NOW(),
@@ -54,10 +54,12 @@ CREATE TABLE "tag_user" (
 ------------------------------
 CREATE TABLE "pet" (
     "id" SERIAL NOT NULL,
-    "name" varchar(255) NOT NULL,
-    "description" varchar(255),
+    "name" VARCHAR(255) NOT NULL,
+    "description" VARCHAR(255),
     "created_at" timestamp NOT NULL DEFAULT NOW(),
     "updated_at" timestamp NOT NULL DEFAULT NOW(),
+    lat NUMERIC(15,10) NOT NULL,
+    lng NUMERIC(15,10) NOT NULL,
 
     CONSTRAINT "PK_pet_id" PRIMARY KEY ("id")
 );

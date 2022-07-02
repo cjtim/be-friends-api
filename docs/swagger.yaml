@@ -70,6 +70,23 @@ definitions:
       time.Time:
         type: string
     type: object
+  repository.Pet:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      lat:
+        type: number
+      lng:
+        type: number
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
 info:
   contact: {}
   title: Be Friends API
@@ -241,6 +258,27 @@ paths:
       summary: Register with email password
       tags:
       - auth
+  /api/v1/pet:
+    get:
+      description: list all pets from database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/repository.Pet'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: list all pets from database
+      tags:
+      - pet
 securityDefinitions:
   Bearer:
     in: header

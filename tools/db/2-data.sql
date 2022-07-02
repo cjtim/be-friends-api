@@ -6,10 +6,11 @@ VALUES
 ('097b2b93-0a66-4de2-a5a6-4f0b15acc54c', 'Test', 'test-preview@gmail.com', '$2a$04$x1jU9wX5Ab7fzyL.qG5CO.4CHB/t3lq0obSjdXkJ5.tmlwjVJZyRO', NULL),
 ('e15f64ec-d87e-4bc3-8680-3fb7b47d438d', 'Line User Test', NULL, NULL, 'aaaaaaaaaaaaaaaaaaaa');
 
-INSERT INTO "pet" (id, name, description)
+INSERT INTO "pet" (id, name, description, lat, lng)
 VALUES
-(1, 'Sam', 'Sam is friendly dog'),
-(2, 'John', 'Johnny is friendly cat');
+(1, 'Sam', 'Sam is friendly dog', 53.1, 64),
+(2, 'John', 'Johnny is friendly cat', 55, 60),
+(3, 'James', NULL, 56, 57);
 
 INSERT INTO "tag" (id, name, is_internal)
 VALUES

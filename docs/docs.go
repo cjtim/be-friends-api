@@ -268,6 +268,38 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/pet": {
+            "get": {
+                "description": "list all pets from database",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pet"
+                ],
+                "summary": "list all pets from database",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/repository.Pet"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -370,6 +402,32 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "time.Time": {
+                    "type": "string"
+                }
+            }
+        },
+        "repository.Pet": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "lng": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }

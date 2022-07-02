@@ -30,7 +30,7 @@ type CustomClaims struct {
 	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
 
 	// Custome fields
-	Tags    json.RawMessage `json:"tags" db:"tags"`
+	Tags    json.RawMessage `json:"tags" db:"tags"` // not in used
 	IsAdmin *bool           `json:"is_admin" db:"is_admin"`
 }
 

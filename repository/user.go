@@ -29,6 +29,12 @@ type UserExtended struct {
 	IsAdmin *bool            `json:"is_admin" db:"is_admin"`
 }
 
+// func (t *UserImpl) GetUser(userId uuid.UUID) (user User, err error) {
+// 	stm := `SELECT * FROM user u WHERE u.id = $1`
+// 	err = DB.Get(&user, stm)
+// 	return user, err
+// }
+
 func (t *UserImpl) GetUserExtended(userID uuid.UUID) (user UserExtended, err error) {
 	stm := `
 	SELECT

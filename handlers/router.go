@@ -5,6 +5,7 @@ import (
 
 	"github.com/cjtim/be-friends-api/handlers/auth"
 	"github.com/cjtim/be-friends-api/handlers/middlewares"
+	"github.com/cjtim/be-friends-api/handlers/pet"
 	"github.com/cjtim/be-friends-api/handlers/tag"
 	"github.com/cjtim/be-friends-api/handlers/taguser"
 	"github.com/cjtim/be-friends-api/repository"
@@ -59,5 +60,10 @@ func Route(r *fiber.App) {
 		tagUserRoute.Get("", middlewares.JWTMiddleware, taguser.Get)
 		tagUserRoute.Post("", taguser.Upsert)
 		tagUserRoute.Delete("", taguser.Delete)
+	}
+
+	petRoute := v1.Group("/pet")
+	{
+		petRoute.Get("", pet.PetList)
 	}
 }
