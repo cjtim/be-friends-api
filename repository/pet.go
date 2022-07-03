@@ -1,6 +1,9 @@
 package repository
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type PetImpl struct{}
 
@@ -16,7 +19,7 @@ type Pet struct {
 
 type PetWithPic struct {
 	Pet
-	PictureURLs string `json:"picture_urls" db:"picture_urls"`
+	PictureURLs json.RawMessage `json:"picture_urls" db:"picture_urls"`
 }
 
 func (p *PetImpl) List() (pets []PetWithPic, err error) {

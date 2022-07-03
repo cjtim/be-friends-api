@@ -12,6 +12,14 @@ VALUES
 (2, 'John', 'Johnny is friendly cat', 55, 60),
 (3, 'James', NULL, 56, 57);
 
+INSERT INTO "pic_pet" (pet_id, picture_url)
+VALUES
+(1, 'https://www.collinsdictionary.com/images/full/dog_230497594.jpg'),
+(1, 'https://mpng.subpng.com/20180505/tse/kisspng-havanese-dog-pet-sitting-puppy-cat-dog-daycare-dog-claw-free-buckle-chart-5aed4809b1f553.3338712315254999137289.jpg'),
+(2, 'https://i.guim.co.uk/img/media/fe1e34da640c5c56ed16f76ce6f994fa9343d09d/0_174_3408_2046/master/3408.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=0d3f33fb6aa6e0154b7713a00454c83d'),
+(2, 'https://media.istockphoto.com/photos/pug-sitting-and-panting-1-year-old-isolated-on-white-picture-id450709593?k=20&m=450709593&s=612x612&w=0&h=82zzJc3Cz39B6LyrQ_N2b4zXxYzZIEH9aNDZWzrZspg='),
+(3, 'https://www.akc.org/wp-content/uploads/2017/11/Golden-Retriever-Puppy.jpg');
+
 INSERT INTO "tag" (id, name, is_internal)
 VALUES
 (1, 'Friendly', FALSE), (2, 'Girl', FALSE), (3, 'Boy', FALSE), (4, 'Need attention', TRUE), (5, 'Line User', TRUE), (6, 'From campaign', TRUE),
