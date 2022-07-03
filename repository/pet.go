@@ -39,3 +39,12 @@ func (p *PetImpl) List() (pets []PetWithPic, err error) {
 	err = DB.Select(&pets, stm)
 	return pets, err
 }
+
+func (p *PetImpl) Create(pet Pet) error {
+	stm := `
+	INSERT INTO "pet" (name, description, lat, lng)
+	VALUES ($1, $2, $3, $4);
+	`
+	_, err := DB.Exec(stm, pet.Name, pet.Description, pet.Lat, pet.Lng)
+	return err
+}
