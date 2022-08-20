@@ -16,8 +16,6 @@ import (
 	"google.golang.org/api/option"
 )
 
-var bucketName = configs.Config.BUCKET_NAME
-
 // ------ Example -------
 // c, err := gstorage.GetClient()
 // if err != nil {
@@ -50,7 +48,7 @@ func GetClient() (*c, error) {
 	}
 	return &c{
 		client: client,
-		bucket: client.Bucket(bucketName),
+		bucket: client.Bucket(configs.Config.BUCKET_NAME),
 	}, nil
 }
 
@@ -68,13 +66,13 @@ func (c *c) Upload(path string, byteData []byte) (string, error) {
 	if err := wc.Close(); err != nil {
 		return "", err
 	}
-	downloadURL := ("https://firebasestorage.googleapis.com/v0/b/" + bucketName + "/o/" +
+	downloadURL := ("https://firebasestorage.googleapis.com/v0/b/" + configs.Config.BUCKET_NAME + "/o/" +
 		url.QueryEscape(wc.Name) + "?alt=media&token=" + downloadToken)
 	return downloadURL, nil
 }
 
 func (c *c) Delete(path string) error {
-	return c.client.Bucket(bucketName).Object(path).Delete(context.TODO())
+	return c.client.Bucket(configs.Config.BUCKET_NAME).Object(path).Delete(context.TODO())
 }
 
 func (c *c) List(filename string) ([]string, error) {

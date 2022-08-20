@@ -32,6 +32,7 @@ type ConfigType struct {
 
 	LogFilePath       string `env:"LOG_PATH,required,notEmpty" envDefault:"/var/log/be-friends-api.log"`
 	GCLOUD_CREDENTIAL string `env:"GCLOUD_CREDENTIAL,required,notEmpty" envDefault:"./configs/serviceAcc.json"`
+	VERSION           string `env:"VERSION,required,notEmpty" envDefault:"local"`
 }
 
 func InitConfig() error {

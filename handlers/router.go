@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"os"
-
+	"github.com/cjtim/be-friends-api/configs"
 	"github.com/cjtim/be-friends-api/handlers/auth"
 	"github.com/cjtim/be-friends-api/handlers/middlewares"
 	"github.com/cjtim/be-friends-api/handlers/pet"
+	pet_img "github.com/cjtim/be-friends-api/handlers/pet/img"
 	"github.com/cjtim/be-friends-api/handlers/tag"
 	"github.com/cjtim/be-friends-api/handlers/taguser"
 	"github.com/cjtim/be-friends-api/repository"
@@ -33,7 +33,7 @@ func Route(r *fiber.App) {
 		return c.SendString("pong")
 	})
 	v1.Get("/version", func(c *fiber.Ctx) error {
-		return c.SendString(os.Getenv("VERSION"))
+		return c.SendString(configs.Config.VERSION)
 	})
 
 	authRoute := v1.Group("/auth")
@@ -65,5 +65,6 @@ func Route(r *fiber.App) {
 	petRoute := v1.Group("/pet")
 	{
 		petRoute.Get("", pet.PetList)
+		petRoute.Post("/img", middlewares.JWTMiddleware, pet_img.PetFileUpload)
 	}
 }

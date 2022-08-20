@@ -70,6 +70,11 @@ definitions:
       time.Time:
         type: string
     type: object
+  pet.UploadResp:
+    properties:
+      downloadURL:
+        type: string
+    type: object
   repository.Pet:
     properties:
       created_at:
@@ -277,6 +282,37 @@ paths:
           schema:
             type: string
       summary: list all pets from database
+      tags:
+      - pet
+  /api/v1/pet/img:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload file to pet object and return downloadURL
+      parameters:
+      - description: File upload
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/pet.UploadResp'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Upload file to pet object and return downloadURL
       tags:
       - pet
 securityDefinitions:
