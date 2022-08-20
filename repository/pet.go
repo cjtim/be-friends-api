@@ -40,11 +40,12 @@ func (p *PetImpl) List() (pets []PetWithPic, err error) {
 	return pets, err
 }
 
-func (p *PetImpl) Create(pet Pet) error {
+func (p *PetImpl) Create(pet Pet) (Pet, error) {
 	stm := `
 	INSERT INTO "pet" (name, description, lat, lng)
-	VALUES ($1, $2, $3, $4);
+	VALUES ($1, $2, $3, $4)
+	RETURNING *
 	`
-	_, err := DB.Exec(stm, pet.Name, pet.Description, pet.Lat, pet.Lng)
-	return err
+	err := DB.Get(&pet, stm, pet.Name, pet.Description, pet.Lat, pet.Lng)
+	return pet, err
 }
