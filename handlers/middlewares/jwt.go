@@ -38,14 +38,13 @@ var JWTMiddleware = func(c *fiber.Ctx) error {
 	})(c)
 }
 
-func AuthRoleIsAdmin(isAdmin bool) func(c *fiber.Ctx) error {
+func AuthRoleIsAdmin() func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		claim, err := auth.GetUserExtendedFromFiberCtx(c)
 		if err != nil {
 			return err
 		}
-		canPass := claim.IsAdmin != nil && *claim.IsAdmin == isAdmin
-		if canPass {
+		if claim.IsAdmin {
 			return c.Next()
 		}
 		return fiber.ErrUnauthorized

@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"encoding/json"
 	"errors"
 	"time"
 
@@ -18,49 +17,16 @@ type User struct {
 	Password   *string   `json:"password" db:"password"`
 	LineUid    *string   `json:"line_uid" db:"line_uid"`
 	PictureURL *string   `json:"picture_url" db:"picture_url"`
+	IsAdmin    bool      `json:"is_admin" db:"is_admin"`
+	IsOrg      bool      `json:"is_org" db:"is_org"`
 	CreatedAt  time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
 }
 
-type UserExtended struct {
-	User
-	// Custome fields
-	Tags    *json.RawMessage `json:"tags" db:"tags"`
-	IsAdmin *bool            `json:"is_admin" db:"is_admin"`
-}
-
-// func (t *UserImpl) GetUser(userId uuid.UUID) (user User, err error) {
-// 	stm := `SELECT * FROM user u WHERE u.id = $1`
-// 	err = DB.Get(&user, stm)
-// 	return user, err
-// }
-
-func (t *UserImpl) GetUserExtended(userID uuid.UUID) (user UserExtended, err error) {
-	stm := `
-	SELECT
-		u.id, u.name, u.email, u.line_uid, u.picture_url, u.created_at, u.updated_at,
-		(
-			SELECT COALESCE(json_agg(tag), '[]')
-			FROM (
-				SELECT t.id as id, t.name as name
-				FROM "tag_user" tu
-				INNER JOIN "tag" t on t.id = tu.tag_id 
-				WHERE tu.user_id = u.id AND t.is_internal = FALSE
-			) tag
-		) AS tags,
-		(
-			SELECT EXISTS (
-				SELECT 1 
-				FROM "tag_user" tu
-				INNER JOIN "tag" t ON t.id = tu.tag_id 
-				WHERE t.name = 'Admin' AND tu.user_id = u.id 
-			)
-		) AS is_admin
-	FROM "user" u
-	WHERE u.id = $1
-	`
-	err = DB.Get(&user, stm, userID)
-	return
+func (t *UserImpl) GetUser(userId uuid.UUID) (user User, err error) {
+	stm := `SELECT * FROM "user" u WHERE u.id = $1`
+	err = DB.Get(&user, stm, userId)
+	return user, err
 }
 
 func (u *UserImpl) UpsertLine(user User) (User, error) {
@@ -78,8 +44,8 @@ func (u *UserImpl) UpsertLine(user User) (User, error) {
 	noUpdatedRow := !row.Next()
 	if noUpdatedRow {
 		stmInsert := `
-			INSERT INTO "user" (name, line_uid, picture_url)
-			VALUES (:name, :line_uid, :picture_url)
+			INSERT INTO "user" (name, line_uid, picture_url, is_org)
+			VALUES (:name, :line_uid, :picture_url, :is_org)
 			RETURNING *
 		`
 		row, err = DB.NamedQuery(stmInsert, user)
@@ -102,8 +68,8 @@ func (u *UserImpl) UpsertLine(user User) (User, error) {
 
 func (u *UserImpl) RegisterUser(user User) (result User, err error) {
 	stmInsert := `
-		INSERT INTO "user" (name, email, password)
-		VALUES (:name, :email, :password)
+		INSERT INTO "user" (name, email, password, is_org)
+		VALUES (:name, :email, :password, :is_org)
 		RETURNING *
 	`
 	rows, err := DB.NamedQuery(stmInsert, user)

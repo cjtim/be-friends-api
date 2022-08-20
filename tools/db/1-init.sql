@@ -7,6 +7,8 @@ CREATE TABLE "user" (
     "password" VARCHAR(255),
     "line_uid" VARCHAR(255),
     "picture_url" text,
+    "is_org"  BOOL,
+    "is_admin" BOOL DEFAULT FALSE NOT NULL, 
     "created_at" timestamp NOT NULL DEFAULT NOW(),
     "updated_at" timestamp NOT NULL DEFAULT NOW(),
 
@@ -34,19 +36,6 @@ CREATE TABLE "tag" (
 -- Search by id and name
 CREATE INDEX IDX01_id_tag ON "tag" (id);
 CREATE INDEX IDX02_name_tag ON "tag" (name);
-
-------------------------------
--- tag_user Table
--- 1 to 1 tag and user
-------------------------------
-CREATE TABLE "tag_user" (
-    user_id uuid NOT NULL,
-    tag_id SERIAL NOT NULL,
-
-    CONSTRAINT "PK_user_tag_id" PRIMARY KEY (user_id, tag_id),
-    CONSTRAINT "FK_user" FOREIGN KEY (user_id) REFERENCES "user" ("id"),
-    CONSTRAINT "FK_tag" FOREIGN KEY (tag_id) REFERENCES "tag" ("id")
-);
 
 ------------------------------
 -- pet Table

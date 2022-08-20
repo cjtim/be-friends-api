@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"encoding/json"
 	"errors"
 	"time"
 
@@ -26,12 +25,11 @@ type CustomClaims struct {
 	Password   *string   `json:"password" db:"password"`
 	LineUid    *string   `json:"line_uid" db:"line_uid"`
 	PictureURL *string   `json:"picture_url" db:"picture_url"`
-	CreatedAt  time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
+	IsOrg      bool      `json:"is_org" db:"is_org"`
+	IsAdmin    bool      `json:"is_admin" db:"is_admin"`
 
-	// Custome fields
-	Tags    json.RawMessage `json:"tags" db:"tags"` // not in used
-	IsAdmin *bool           `json:"is_admin" db:"is_admin"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
 func GetUserExtendedFromFiberCtx(c *fiber.Ctx) (*CustomClaims, error) {
@@ -65,7 +63,7 @@ func SetCookie(c *fiber.Ctx, token string, claim jwt.Claims) {
 }
 
 func GetNewToken(userID uuid.UUID) (*jwt.Token, string, error) {
-	u, err := repository.UserRepo.GetUserExtended(userID)
+	u, err := repository.UserRepo.GetUser(userID)
 	if err != nil {
 		return nil, "", err
 	}
@@ -76,9 +74,9 @@ func GetNewToken(userID uuid.UUID) (*jwt.Token, string, error) {
 		Email:      u.Email,
 		LineUid:    u.LineUid,
 		PictureURL: u.PictureURL,
-		Tags:       *u.Tags,
 		UpdatedAt:  u.UpdatedAt,
 		CreatedAt:  u.CreatedAt,
+		IsOrg:      u.IsOrg,
 		IsAdmin:    u.IsAdmin,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(TOKEN_EXPIRE)),
