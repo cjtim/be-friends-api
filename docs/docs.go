@@ -299,6 +299,55 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create pet",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pet"
+                ],
+                "summary": "Create pet",
+                "parameters": [
+                    {
+                        "description": "Pet details",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/pet.CreateBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/repository.Pet"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         },
         "/api/v1/pet/img": {
@@ -326,13 +375,20 @@ const docTemplate = `{
                         "name": "file",
                         "in": "formData",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "PetId",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/pet.UploadResp"
+                            "$ref": "#/definitions/img.UploadResp"
                         }
                     },
                     "400": {
@@ -382,6 +438,9 @@ const docTemplate = `{
                 "is_admin": {
                     "type": "boolean"
                 },
+                "is_org": {
+                    "type": "boolean"
+                },
                 "iss": {
                     "description": "the ` + "`" + `iss` + "`" + ` (Issuer) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1",
                     "type": "string"
@@ -409,13 +468,6 @@ const docTemplate = `{
                 "sub": {
                     "description": "the ` + "`" + `sub` + "`" + ` (Subject) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2",
                     "type": "string"
-                },
-                "tags": {
-                    "description": "Custome fields",
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
                 },
                 "updated_at": {
                     "type": "string"
@@ -447,6 +499,14 @@ const docTemplate = `{
                 }
             }
         },
+        "img.UploadResp": {
+            "type": "object",
+            "properties": {
+                "downloadURL": {
+                    "type": "string"
+                }
+            }
+        },
         "jwt.NumericDate": {
             "type": "object",
             "properties": {
@@ -455,10 +515,19 @@ const docTemplate = `{
                 }
             }
         },
-        "pet.UploadResp": {
+        "pet.CreateBody": {
             "type": "object",
             "properties": {
-                "downloadURL": {
+                "description": {
+                    "type": "string"
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "lng": {
+                    "type": "number"
+                },
+                "name": {
                     "type": "string"
                 }
             }

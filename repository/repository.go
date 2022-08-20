@@ -12,6 +12,7 @@ var (
 	TagRepo     *TagImpl
 	TagUserRepo *TagUserImpl
 	PetRepo     *PetImpl
+	PetPicRepo  *PetPicImpl
 )
 
 func Connect() (*sqlx.DB, error) {

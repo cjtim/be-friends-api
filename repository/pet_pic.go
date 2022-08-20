@@ -16,7 +16,7 @@ func (p *PetPicImpl) Add(PetID int, urls []string) error {
 		})
 	}
 	stm := `
-	INSERT INTO "pet_pic" (pet_id, picture_url)
+	INSERT INTO "pic_pet" (pet_id, picture_url)
 	VALUES (:pet_id, :picture_url)
 	`
 	_, err := DB.NamedExec(stm, data)
