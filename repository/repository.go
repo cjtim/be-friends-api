@@ -7,12 +7,11 @@ import (
 )
 
 var (
-	DB          *sqlx.DB
-	UserRepo    *UserImpl
-	TagRepo     *TagImpl
-	TagUserRepo *TagUserImpl
-	PetRepo     *PetImpl
-	PetPicRepo  *PetPicImpl
+	DB         *sqlx.DB
+	UserRepo   *UserImpl
+	TagRepo    *TagImpl
+	PetRepo    *PetImpl
+	PetPicRepo *PetPicImpl
 )
 
 func Connect() (*sqlx.DB, error) {

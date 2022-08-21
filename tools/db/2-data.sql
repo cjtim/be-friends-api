@@ -6,11 +6,11 @@ VALUES
 ('097b2b93-0a66-4de2-a5a6-4f0b15acc54c', 'Test', 'test-preview@gmail.com', '$2a$04$x1jU9wX5Ab7fzyL.qG5CO.4CHB/t3lq0obSjdXkJ5.tmlwjVJZyRO', TRUE, NULL),
 ('e15f64ec-d87e-4bc3-8680-3fb7b47d438d', 'Line User Test', NULL, NULL, FALSE, 'aaaaaaaaaaaaaaaaaaaa');
 
-INSERT INTO "pet" (id, name, description, lat, lng)
+INSERT INTO "pet" (name, description, lat, lng)
 VALUES
-(1, 'Sam', 'Sam is friendly dog', 53.1, 64),
-(2, 'John', 'Johnny is friendly cat', 55, 60),
-(3, 'James', NULL, 56, 57);
+('Sam', 'Sam is friendly dog', 53.1, 64),
+('John', 'Johnny is friendly cat', 55, 60),
+('James', NULL, 56, 57);
 
 INSERT INTO "pic_pet" (pet_id, picture_url)
 VALUES
@@ -20,10 +20,15 @@ VALUES
 (2, 'https://media.istockphoto.com/photos/pug-sitting-and-panting-1-year-old-isolated-on-white-picture-id450709593?k=20&m=450709593&s=612x612&w=0&h=82zzJc3Cz39B6LyrQ_N2b4zXxYzZIEH9aNDZWzrZspg='),
 (3, 'https://www.akc.org/wp-content/uploads/2017/11/Golden-Retriever-Puppy.jpg');
 
-INSERT INTO "tag" (id, name, is_internal)
+INSERT INTO "tag" (name, is_internal)
 VALUES
-(1, 'Friendly', FALSE), (2, 'Girl', FALSE), (3, 'Boy', FALSE), (4, 'Need attention', TRUE), (5, 'Line User', TRUE), (6, 'From campaign', TRUE),
-(7, 'Admin', TRUE);
+('Friendly', FALSE),
+('Girl', FALSE),
+('Boy', FALSE),
+('Need attention', TRUE),
+('Line User', TRUE),
+('From campaign', TRUE),
+('Admin', TRUE);
 
 INSERT INTO "tag_pet" (pet_id, tag_id)
 VALUES

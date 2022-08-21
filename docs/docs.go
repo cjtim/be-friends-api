@@ -405,6 +405,82 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/shelter": {
+            "get": {
+                "description": "list all shelters from database",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shelter"
+                ],
+                "summary": "list all shelters from database",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/repository.User"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/shelter/{id}": {
+            "get": {
+                "description": "list shelter by id from database",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shelter"
+                ],
+                "summary": "list shelter by id from database",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "shelter id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/repository.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -551,6 +627,41 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "repository.User": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "is_org": {
+                    "type": "boolean"
+                },
+                "line_uid": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "picture_url": {
                     "type": "string"
                 },
                 "updated_at": {

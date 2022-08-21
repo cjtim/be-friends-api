@@ -6,8 +6,8 @@ import (
 	"github.com/cjtim/be-friends-api/handlers/middlewares"
 	"github.com/cjtim/be-friends-api/handlers/pet"
 	pet_img "github.com/cjtim/be-friends-api/handlers/pet/img"
+	"github.com/cjtim/be-friends-api/handlers/shelter"
 	"github.com/cjtim/be-friends-api/handlers/tag"
-	"github.com/cjtim/be-friends-api/handlers/taguser"
 	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
 )
@@ -55,17 +55,16 @@ func Route(r *fiber.App) {
 		tagRoute.Delete("/:id", tag.TagDelete)
 	}
 
-	tagUserRoute := v1.Group("/tag_user")
-	{
-		tagUserRoute.Get("", middlewares.JWTMiddleware, taguser.Get)
-		tagUserRoute.Post("", taguser.Upsert)
-		tagUserRoute.Delete("", taguser.Delete)
-	}
-
 	petRoute := v1.Group("/pet")
 	{
 		petRoute.Get("", pet.PetList)
 		petRoute.Post("", middlewares.JWTMiddleware, pet.PetCreate)
 		petRoute.Post("/img", middlewares.JWTMiddleware, pet_img.PetFileUpload)
+	}
+
+	shelterRoute := v1.Group("/shelter")
+	{
+		shelterRoute.Get("", shelter.GetShelters)
+		shelterRoute.Get("/:id", shelter.GetShelterById)
 	}
 }

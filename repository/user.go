@@ -29,6 +29,18 @@ func (t *UserImpl) GetUser(userId uuid.UUID) (user User, err error) {
 	return user, err
 }
 
+func (t *UserImpl) GetOrganizations() (users []User, err error) {
+	stm := `SELECT u.id, u.name, u.email, u.picture_url, u.is_admin, u.is_org, u.created_at, u.updated_at FROM "user" u WHERE u.is_org = TRUE`
+	err = DB.Select(&users, stm)
+	return users, err
+}
+
+func (t *UserImpl) GetOrganizationById(id uuid.UUID) (users User, err error) {
+	stm := `SELECT u.id, u.name, u.email, u.picture_url, u.is_admin, u.is_org, u.created_at, u.updated_at FROM "user" u WHERE u.is_org = TRUE AND u.id =$1`
+	err = DB.Get(&users, stm, id)
+	return users, err
+}
+
 func (u *UserImpl) UpsertLine(user User) (User, error) {
 	result := User{}
 	stmUpdate := `
