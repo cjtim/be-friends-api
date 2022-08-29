@@ -5,16 +5,11 @@ import (
 
 	"github.com/cjtim/be-friends-api/configs"
 	"github.com/cjtim/be-friends-api/internal/auth"
+	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
 )
 
 type loginBody struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type registerBody struct {
-	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
@@ -30,14 +25,14 @@ type registerBody struct {
 // @Failure      500  {string}  string
 // @Router       /api/v1/auth/register [post]
 func AuthRegister(c *fiber.Ctx) error {
-	register := registerBody{}
+	register := repository.User{}
 	err := c.BodyParser(&register)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).SendString("Cannot parse body")
 	}
 
 	// Save to DB
-	newUser, err := auth.CreateUserEmailPassword(register.Name, register.Email, register.Password)
+	newUser, err := auth.CreateOrgEmailPassword(register)
 	if err != nil {
 		return c.SendStatus(http.StatusInternalServerError)
 	}

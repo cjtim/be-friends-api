@@ -22,8 +22,6 @@ type User struct {
 	IsOrg       bool      `json:"is_org" db:"is_org"`
 	IsAdmin     bool      `json:"is_admin" db:"is_admin"`
 
-	ShelterID uuid.UUID `json:"shelter_id" db:"shelter_id"`
-
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
@@ -83,7 +81,7 @@ func (u *UserImpl) UpsertLine(user User) (User, error) {
 	return result, err
 }
 
-func (u *UserImpl) RegisterUser(user User) (result User, err error) {
+func (u *UserImpl) Register(user User) (result User, err error) {
 	stmInsert := `
 		INSERT INTO "user" (name, email, password, is_org)
 		VALUES (:name, :email, :password, :is_org)
@@ -102,9 +100,9 @@ func (u *UserImpl) RegisterUser(user User) (result User, err error) {
 	return User{}, errors.New("error register user - cannot parse inserted row")
 }
 
-func (u *UserImpl) GetUserByEmailWithPassword(email string) (User, error) {
+func (u *UserImpl) GetOrgByEmailWithPassword(email string) (User, error) {
 	result := User{}
-	stm := `SELECT * FROM "user" WHERE email = $1`
+	stm := `SELECT * FROM "user" WHERE email = $1 AND is_org = TRUE`
 	err := DB.Get(&result, stm, email)
 	return result, err
 }

@@ -42,5 +42,4 @@ CREATE TABLE "user" (
 -- Index for search by id
 CREATE INDEX IDX01_id_user ON "user" (id);
 CREATE INDEX IDX02_line_uid_user ON "user" (line_uid);
-CREATE INDEX IDX03_shelter_id_user ON "user" (shelter_id);
-CREATE INDEX IDX04_email_user ON "user" (email);
+CREATE INDEX IDX03_email_user ON "user" (email);
