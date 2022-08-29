@@ -11,16 +11,21 @@ import (
 type UserImpl struct{}
 
 type User struct {
-	ID         uuid.UUID `json:"id" db:"id"`
-	Name       string    `json:"name" db:"name"`
-	Email      *string   `json:"email" db:"email"`
-	Password   *string   `json:"password" db:"password"`
-	LineUid    *string   `json:"line_uid" db:"line_uid"`
-	PictureURL *string   `json:"picture_url" db:"picture_url"`
-	IsAdmin    bool      `json:"is_admin" db:"is_admin"`
-	IsOrg      bool      `json:"is_org" db:"is_org"`
-	CreatedAt  time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
+	ID          uuid.UUID `json:"id" db:"id"`
+	Name        string    `json:"name" db:"name"`
+	Email       *string   `json:"email" db:"email"`
+	Password    *string   `json:"password" db:"password"`
+	LineUid     *string   `json:"line_uid" db:"line_uid"`
+	Description *string   `json:"description" db:"description"`
+	PictureURL  *string   `json:"picture_url" db:"picture_url"`
+	Phone       *string   `json:"phone" db:"phone"`
+	IsOrg       bool      `json:"is_org" db:"is_org"`
+	IsAdmin     bool      `json:"is_admin" db:"is_admin"`
+
+	ShelterID uuid.UUID `json:"shelter_id" db:"shelter_id"`
+
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
 func (t *UserImpl) GetUser(userId uuid.UUID) (user User, err error) {
