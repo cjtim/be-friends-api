@@ -22,6 +22,9 @@ type User struct {
 	IsOrg       bool      `json:"is_org" db:"is_org"`
 	IsAdmin     bool      `json:"is_admin" db:"is_admin"`
 
+	Lat *float64 `json:"lat" db:"lat"`
+	Lng *float64 `json:"lng" db:"lng"`
+
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
@@ -83,18 +86,18 @@ func (u *UserImpl) UpsertLine(user User) (User, error) {
 
 func (u *UserImpl) Register(user User) (result User, err error) {
 	stmInsert := `
-		INSERT INTO "user" (name, email, password, is_org)
-		VALUES (:name, :email, :password, :is_org)
+		INSERT INTO "user" (name, email, password, description, phone, picture_url, is_org, lat, lng)
+		VALUES (:name, :email, :password, :description, :phone, :picture_url, :is_org, :lat, :lng)
 		RETURNING *
 	`
 	rows, err := DB.NamedQuery(stmInsert, user)
 	if err != nil {
-		zap.L().Error("error register user", zap.String("email", *user.Email), zap.String("name", user.Name))
+		zap.L().Error("error register user", zap.String("email", *user.Email), zap.String("name", user.Name), zap.Error(err))
 		return
 	}
 	if rows.Next() {
 		rows.StructScan(&result)
-		zap.L().Info("NEW USER register", zap.Any("id", result.ID))
+		zap.L().Info("NEW USER register", zap.Any("id", result.ID), zap.Error(err))
 		return result, err
 	}
 	return User{}, errors.New("error register user - cannot parse inserted row")

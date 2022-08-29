@@ -33,6 +33,8 @@ func CreateOrgEmailPassword(u r.User) (r.User, error) {
 		PictureURL:  u.PictureURL,
 		Phone:       u.Phone,
 		IsOrg:       true,
+		Lat:         u.Lat,
+		Lng:         u.Lng,
 	})
 }
 
