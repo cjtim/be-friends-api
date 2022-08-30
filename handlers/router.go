@@ -3,8 +3,8 @@ package handlers
 import (
 	"github.com/cjtim/be-friends-api/configs"
 	"github.com/cjtim/be-friends-api/handlers/auth"
+	"github.com/cjtim/be-friends-api/handlers/interest"
 	"github.com/cjtim/be-friends-api/handlers/like"
-	interest "github.com/cjtim/be-friends-api/handlers/like"
 	"github.com/cjtim/be-friends-api/handlers/middlewares"
 	"github.com/cjtim/be-friends-api/handlers/pet"
 	pet_img "github.com/cjtim/be-friends-api/handlers/pet/img"
@@ -63,7 +63,7 @@ func Route(r *fiber.App) {
 	petRoute := v1.Group("/pet")
 	{
 		petRoute.Get("", pet.PetList)                                           // list pet
-		petRoute.Get("/:pet_id", pet.PetDetails)                                // get pet by :pet_id
+		petRoute.Get("/:pet_id", middlewares.JWTMiddleware, pet.PetDetails)     // get pet by :pet_id
 		petRoute.Post("", middlewares.JWTMiddleware, pet.PetCreate)             // create pet
 		petRoute.Put("", middlewares.JWTMiddleware, pet.PetCreate)              // create pet
 		petRoute.Post("/img", middlewares.JWTMiddleware, pet_img.PetFileUpload) // upload pet image
@@ -71,19 +71,18 @@ func Route(r *fiber.App) {
 
 	shelterRoute := v1.Group("/shelter")
 	{
-		shelterRoute.Get("", shelter.GetShelters)        // shelter list
-		shelterRoute.Get("/:id", shelter.GetShelterById) // details
+		shelterRoute.Get("", shelter.GetShelters)                                   // shelter list
+		shelterRoute.Get("/:id", middlewares.JWTMiddleware, shelter.GetShelterById) // details
 	}
 
-	// TODO: imprement all
-	likeRoute := v1.Group("/like")
+	likeRoute := v1.Group("/like", middlewares.JWTMiddleware)
 	{
 		likeRoute.Get("", like.List)
 		likeRoute.Post("/:pet_id", like.Add)
 		likeRoute.Delete("/:pet_id", like.Remove)
 	}
 
-	interestRoute := v1.Group("/interest")
+	interestRoute := v1.Group("/interest", middlewares.JWTMiddleware)
 	{
 		interestRoute.Get("", interest.List)
 		interestRoute.Post("/:pet_id", interest.Add)

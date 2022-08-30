@@ -7,10 +7,14 @@ type InterestedImpl struct{}
 type Interested struct {
 	PetID  int       `json:"pet_id" db:"pet_id"`
 	UserID uuid.UUID `json:"user_id" db:"user_id"`
+	Pet
 }
 
 func (i *InterestedImpl) ListByUserID(userID uuid.UUID) (output []Interested, err error) {
-	stm := `SELECT * FROM "interested" WHERE user_id = $1`
+	stm := `SELECT * FROM "interested" l 
+			INNER JOIN "pet" p 
+			ON l.pet_id = p.id 
+			WHERE l.user_id = $1`
 	err = DB.Select(&output, stm, userID)
 	return
 }
