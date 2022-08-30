@@ -56,3 +56,19 @@ func (p *PetImpl) Create(pet Pet) (Pet, error) {
 	err := DB.Get(&pet, stm, pet.Name, pet.Description, pet.Lat, pet.Lng)
 	return pet, err
 }
+
+func (p *PetImpl) Update(pet Pet) error {
+	stm := `
+		UPDATE "tag" 
+		SET 
+			name = :name, 
+			description = :description,
+			lat = :lat,
+			lng = :lng,
+			status = :status
+		WHERE id = :id
+		RETURNING *
+	`
+	_, err := DB.NamedQuery(stm, pet)
+	return err
+}

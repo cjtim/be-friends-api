@@ -29,17 +29,16 @@ func (t *TagImpl) Create(name string, description *string, isInternal *bool) (ta
 	return
 }
 
-func (t *TagImpl) Update(id int, name string, description *string, isInternal *bool) (tag Tag, err error) {
+func (t *TagImpl) Update(id int, name string, description *string) (tag Tag, err error) {
 	stm := `
 		UPDATE "tag" 
 		SET 
 			name = $2, 
-			description = $3, 
-			is_internal = $4
+			description = $3
 		WHERE id = $1
 		RETURNING *
 	`
-	err = DB.Get(&tag, stm, id, name, description, isInternal)
+	err = DB.Get(&tag, stm, id, name, description)
 	return
 }
 

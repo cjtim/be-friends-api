@@ -3,6 +3,8 @@ package handlers
 import (
 	"github.com/cjtim/be-friends-api/configs"
 	"github.com/cjtim/be-friends-api/handlers/auth"
+	"github.com/cjtim/be-friends-api/handlers/like"
+	interest "github.com/cjtim/be-friends-api/handlers/like"
 	"github.com/cjtim/be-friends-api/handlers/middlewares"
 	"github.com/cjtim/be-friends-api/handlers/pet"
 	pet_img "github.com/cjtim/be-friends-api/handlers/pet/img"
@@ -39,9 +41,12 @@ func Route(r *fiber.App) {
 	authRoute := v1.Group("/auth")
 	{
 		authRoute.Get("/me", middlewares.JWTMiddleware, auth.Me)
+		authRoute.Post("/me", middlewares.JWTMiddleware, auth.UpdateUser)
+
 		authRoute.Get("/logout", auth.Logout)
 		authRoute.Post("/login", auth.AuthLogin)
 		authRoute.Post("/register", auth.AuthRegister)
+
 		authRoute.Get("/line", auth.LoginLine)
 		authRoute.Get("/line/callback", auth.LineCallback)
 		authRoute.Get("/line/jwt", auth.LineGetJwt)
@@ -51,20 +56,36 @@ func Route(r *fiber.App) {
 	{
 		tagRoute.Get("", tag.TagList)
 		tagRoute.Post("", tag.TagCreate)
-		tagRoute.Put("", tag.TagUpdate)
+		tagRoute.Put("/:id", tag.TagUpdate)
 		tagRoute.Delete("/:id", tag.TagDelete)
 	}
 
 	petRoute := v1.Group("/pet")
 	{
-		petRoute.Get("", pet.PetList)
-		petRoute.Post("", middlewares.JWTMiddleware, pet.PetCreate)
-		petRoute.Post("/img", middlewares.JWTMiddleware, pet_img.PetFileUpload)
+		petRoute.Get("", pet.PetList)                                           // list pet
+		petRoute.Post("", middlewares.JWTMiddleware, pet.PetCreate)             // create pet
+		petRoute.Put("", middlewares.JWTMiddleware, pet.PetCreate)              // create pet
+		petRoute.Post("/img", middlewares.JWTMiddleware, pet_img.PetFileUpload) // upload pet image
 	}
 
 	shelterRoute := v1.Group("/shelter")
 	{
-		shelterRoute.Get("", shelter.GetShelters)
-		shelterRoute.Get("/:id", shelter.GetShelterById)
+		shelterRoute.Get("", shelter.GetShelters)        // shelter list
+		shelterRoute.Get("/:id", shelter.GetShelterById) // details
+	}
+
+	// TODO: imprement all
+	likeRoute := v1.Group("/like")
+	{
+		likeRoute.Get("", like.List)
+		likeRoute.Post("/:pet_id", like.Add)
+		likeRoute.Delete("/:pet_id", like.Remove)
+	}
+
+	interestRoute := v1.Group("/interest")
+	{
+		interestRoute.Get("", interest.List)
+		interestRoute.Post("/:pet_id", interest.Add)
+		interestRoute.Delete("/:pet_id", interest.Remove)
 	}
 }

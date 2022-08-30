@@ -8,24 +8,19 @@ import (
 )
 
 func TagUpdate(c *fiber.Ctx) error {
-	strID := c.Query("id")
+	strID := c.Params("id")
 	name := c.Query("name")
 	desc := c.Query("description")
-	strIsInternal := c.Query("is_internal")
 
-	if strID == "" || strIsInternal == "" {
+	if strID == "" {
 		return fiber.ErrBadRequest
 	}
 	id, err := strconv.Atoi(strID)
 	if err != nil {
 		return fiber.ErrBadRequest
 	}
-	isInternal, err := strconv.ParseBool(strIsInternal)
-	if err != nil {
-		return fiber.ErrBadRequest
-	}
 
-	tag, err := repository.TagRepo.Update(id, name, &desc, &isInternal)
+	tag, err := repository.TagRepo.Update(id, name, &desc)
 	if err != nil {
 		return err
 	}

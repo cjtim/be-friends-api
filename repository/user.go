@@ -109,3 +109,21 @@ func (u *UserImpl) GetOrgByEmailWithPassword(email string) (User, error) {
 	err := DB.Get(&result, stm, email)
 	return result, err
 }
+
+func (u *UserImpl) UpdateUser(user User) error {
+	stmUpdate := `
+		UPDATE "user"
+		SET 
+			name = :name,
+			description = :description,
+			picture_url = :picture_url,
+			phone = :phone,
+			lat = :lat,
+			lng = :lng,
+			updated_at = NOW()
+		WHERE id = :id
+		RETURNING *
+	`
+	_, err := DB.NamedQuery(stmUpdate, user)
+	return err
+}

@@ -7,9 +7,16 @@ import (
 )
 
 var (
-	DB         *sqlx.DB
-	UserRepo   *UserImpl
+	DB       *sqlx.DB
+	UserRepo *UserImpl
+
+	InterestedRepo *InterestedImpl
+	LikedRepo      *LikedImpl
+	DonateRepo     *DonateImpl
+
 	TagRepo    *TagImpl
+	TagPetRepo *TagPetImpl
+
 	PetRepo    *PetImpl
 	PetPicRepo *PetPicImpl
 )
