@@ -79,6 +79,7 @@ func prepareFiber() *fiber.App {
 
 	app.Use(middlewares.Cors())
 	app.Use(middlewares.RequestLog())
+	app.Use(middlewares.NoCache())
 	handlers.Route(app) // setup router path
 	return app
 }
