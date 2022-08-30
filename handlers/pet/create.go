@@ -1,16 +1,10 @@
 package pet
 
 import (
+	"github.com/cjtim/be-friends-api/internal/auth"
 	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
 )
-
-type CreateBody struct {
-	Name        string  `json:"name"`
-	Description *string `json:"description"`
-	Lat         float32 `json:"lat"`
-	Lng         float32 `json:"lng"`
-}
 
 // PetCreate - Create pet
 // @Summary		 Create pet
@@ -25,8 +19,13 @@ type CreateBody struct {
 // @Failure      500  	{string}  	string
 // @Router       /api/v1/pet [post]
 func PetCreate(c *fiber.Ctx) error {
-	body := CreateBody{}
+	body := repository.Pet{}
 	err := c.BodyParser(&body)
+	if err != nil {
+		return err
+	}
+
+	claims, err := auth.GetUserExtendedFromFiberCtx(c)
 	if err != nil {
 		return err
 	}
@@ -35,6 +34,8 @@ func PetCreate(c *fiber.Ctx) error {
 		Description: body.Description,
 		Lat:         float64(body.Lat),
 		Lng:         float64(body.Lng),
+		Status:      repository.NEW,
+		UserID:      claims.ID,
 	})
 
 	if err != nil {

@@ -11,16 +11,22 @@ import (
 type UserImpl struct{}
 
 type User struct {
-	ID         uuid.UUID `json:"id" db:"id"`
-	Name       string    `json:"name" db:"name"`
-	Email      *string   `json:"email" db:"email"`
-	Password   *string   `json:"password" db:"password"`
-	LineUid    *string   `json:"line_uid" db:"line_uid"`
-	PictureURL *string   `json:"picture_url" db:"picture_url"`
-	IsAdmin    bool      `json:"is_admin" db:"is_admin"`
-	IsOrg      bool      `json:"is_org" db:"is_org"`
-	CreatedAt  time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
+	ID          uuid.UUID `json:"id" db:"id"`
+	Name        string    `json:"name" db:"name"`
+	Email       *string   `json:"email" db:"email"`
+	Password    *string   `json:"password" db:"password"`
+	LineUid     *string   `json:"line_uid" db:"line_uid"`
+	Description *string   `json:"description" db:"description"`
+	PictureURL  *string   `json:"picture_url" db:"picture_url"`
+	Phone       *string   `json:"phone" db:"phone"`
+	IsOrg       bool      `json:"is_org" db:"is_org"`
+	IsAdmin     bool      `json:"is_admin" db:"is_admin"`
+
+	Lat *float64 `json:"lat" db:"lat"`
+	Lng *float64 `json:"lng" db:"lng"`
+
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
 func (t *UserImpl) GetUser(userId uuid.UUID) (user User, err error) {
@@ -78,28 +84,46 @@ func (u *UserImpl) UpsertLine(user User) (User, error) {
 	return result, err
 }
 
-func (u *UserImpl) RegisterUser(user User) (result User, err error) {
+func (u *UserImpl) Register(user User) (result User, err error) {
 	stmInsert := `
-		INSERT INTO "user" (name, email, password, is_org)
-		VALUES (:name, :email, :password, :is_org)
+		INSERT INTO "user" (name, email, password, description, phone, picture_url, is_org, lat, lng)
+		VALUES (:name, :email, :password, :description, :phone, :picture_url, :is_org, :lat, :lng)
 		RETURNING *
 	`
 	rows, err := DB.NamedQuery(stmInsert, user)
 	if err != nil {
-		zap.L().Error("error register user", zap.String("email", *user.Email), zap.String("name", user.Name))
+		zap.L().Error("error register user", zap.String("email", *user.Email), zap.String("name", user.Name), zap.Error(err))
 		return
 	}
 	if rows.Next() {
 		rows.StructScan(&result)
-		zap.L().Info("NEW USER register", zap.Any("id", result.ID))
+		zap.L().Info("NEW USER register", zap.Any("id", result.ID), zap.Error(err))
 		return result, err
 	}
 	return User{}, errors.New("error register user - cannot parse inserted row")
 }
 
-func (u *UserImpl) GetUserByEmailWithPassword(email string) (User, error) {
+func (u *UserImpl) GetOrgByEmailWithPassword(email string) (User, error) {
 	result := User{}
-	stm := `SELECT * FROM "user" WHERE email = $1`
+	stm := `SELECT * FROM "user" WHERE email = $1 AND is_org = TRUE`
 	err := DB.Get(&result, stm, email)
 	return result, err
+}
+
+func (u *UserImpl) UpdateUser(user User) error {
+	stmUpdate := `
+		UPDATE "user"
+		SET 
+			name = :name,
+			description = :description,
+			picture_url = :picture_url,
+			phone = :phone,
+			lat = :lat,
+			lng = :lng,
+			updated_at = NOW()
+		WHERE id = :id
+		RETURNING *
+	`
+	_, err := DB.NamedQuery(stmUpdate, user)
+	return err
 }

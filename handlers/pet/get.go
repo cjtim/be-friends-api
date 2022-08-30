@@ -1,6 +1,8 @@
 package pet
 
 import (
+	"strconv"
+
 	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
 )
@@ -20,4 +22,22 @@ func PetList(c *fiber.Ctx) error {
 		return err
 	}
 	return c.JSON(pets)
+}
+
+func PetDetails(c *fiber.Ctx) error {
+	idStr := c.Params("pet_id", "")
+	if idStr == "" {
+		return c.SendStatus(fiber.StatusBadRequest)
+	}
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return err
+	}
+
+	pet, err := repository.PetRepo.GetById(id)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(pet)
 }

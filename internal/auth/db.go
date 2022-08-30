@@ -16,21 +16,33 @@ func (p *lineProfile) createLineUser() (r.User, error) {
 	})
 }
 
-func CreateUserEmailPassword(name, email, rawPassword string) (r.User, error) {
-	bs, err := bcrypt.GenerateFromPassword([]byte(rawPassword), bcrypt.MinCost)
+func CreateOrgEmailPassword(u r.User) (r.User, error) {
+	if u.Password == nil || *u.Password == "" {
+		return r.User{}, errors.New("password cannot blank")
+	}
+	bs, err := bcrypt.GenerateFromPassword([]byte(*u.Password), bcrypt.MinCost)
 	if err != nil {
 		return r.User{}, err
 	}
 	hashPassword := string(bs)
-	return r.UserRepo.RegisterUser(r.User{
-		Name:     name,
-		Email:    &email,
-		Password: &hashPassword,
+	return r.UserRepo.Register(r.User{
+		Name:        u.Name,
+		Email:       u.Email,
+		Password:    &hashPassword,
+		Description: u.Description,
+		PictureURL:  u.PictureURL,
+		Phone:       u.Phone,
+		IsOrg:       true,
+		Lat:         u.Lat,
+		Lng:         u.Lng,
 	})
 }
 
 func Login(email, password string) (r.User, error) {
-	u, err := r.UserRepo.GetUserByEmailWithPassword(email)
+	if password == "" {
+		return r.User{}, errors.New("password cannot blank")
+	}
+	u, err := r.UserRepo.GetOrgByEmailWithPassword(email)
 	if err != nil {
 		errStr := fmt.Sprintf("no user in db, err: %s", err.Error())
 		return r.User{}, errors.New(errStr)
