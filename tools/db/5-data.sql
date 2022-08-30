@@ -1,3 +1,7 @@
+INSERT INTO "status" (name)
+VALUES ('new'), ('pending'), ('adoped');
+
+
 -- -- Test credential
 -- -- test-preview@gmail.com
 -- -- test

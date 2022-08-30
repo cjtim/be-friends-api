@@ -25,7 +25,7 @@ CREATE TABLE "user" (
     "line_uid" VARCHAR(255),
     "description" text,
     "picture_url" text,
-    "phone" text NOT NULL,
+    "phone" text,
     "is_org" BOOL DEFAULT FALSE NOT NULL,
     "is_admin" BOOL DEFAULT FALSE NOT NULL,
 

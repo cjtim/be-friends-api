@@ -63,6 +63,7 @@ func Route(r *fiber.App) {
 	petRoute := v1.Group("/pet")
 	{
 		petRoute.Get("", pet.PetList)                                           // list pet
+		petRoute.Get("/:pet_id", pet.PetDetails)                                // get pet by :pet_id
 		petRoute.Post("", middlewares.JWTMiddleware, pet.PetCreate)             // create pet
 		petRoute.Put("", middlewares.JWTMiddleware, pet.PetCreate)              // create pet
 		petRoute.Post("/img", middlewares.JWTMiddleware, pet_img.PetFileUpload) // upload pet image
