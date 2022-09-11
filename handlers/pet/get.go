@@ -5,6 +5,7 @@ import (
 
 	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 // PetList - list all pets from database
@@ -17,6 +18,18 @@ import (
 // @Failure      500  {string}  string
 // @Router       /api/v1/pet [get]
 func PetList(c *fiber.Ctx) error {
+	userId := c.Query("user_id")
+	if userId != "" {
+		_, err := uuid.Parse(userId)
+		if err != nil {
+			return err
+		}
+		pets, err := repository.PetRepo.List()
+		if err != nil {
+			return err
+		}
+		return c.JSON(pets)
+	}
 	pets, err := repository.PetRepo.List()
 	if err != nil {
 		return err

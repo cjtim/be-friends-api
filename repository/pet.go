@@ -47,6 +47,25 @@ func (p *PetImpl) List() (pets []PetWithPic, err error) {
 	return pets, err
 }
 
+func (p *PetImpl) ListByUserId(userId uuid.UUID) (pets []PetWithPic, err error) {
+	stm := `
+	SELECT 
+		p.*,
+		(
+			SELECT COALESCE(json_agg(pic), '[]')
+			FROM (
+				SELECT picture_url
+				FROM "pic_pet" pp
+				WHERE pp.pet_id = p.id
+			) pic
+		) AS picture_urls
+	FROM pet p
+	WHERE p.user_id = $1
+	`
+	err = DB.Select(&pets, stm, userId)
+	return pets, err
+}
+
 func (p *PetImpl) GetById(id int) (pet PetWithPic, err error) {
 	stm := `
 	SELECT 

@@ -2,13 +2,13 @@ INSERT INTO "status" (name)
 VALUES ('new'), ('pending'), ('adoped');
 
 
--- -- Test credential
--- -- test-preview@gmail.com
--- -- test
--- INSERT INTO "user" (id, name, email, password, is_org, line_uid)
--- VALUES 
--- ('097b2b93-0a66-4de2-a5a6-4f0b15acc54c', 'Test', 'test-preview@gmail.com', '$2a$04$x1jU9wX5Ab7fzyL.qG5CO.4CHB/t3lq0obSjdXkJ5.tmlwjVJZyRO', TRUE, NULL),
--- ('e15f64ec-d87e-4bc3-8680-3fb7b47d438d', 'Line User Test', NULL, NULL, FALSE, 'aaaaaaaaaaaaaaaaaaaa');
+-- Test credential
+-- test-preview@gmail.com
+-- test
+INSERT INTO "user" (id, name, email, password, is_org, line_uid)
+VALUES 
+('097b2b93-0a66-4de2-a5a6-4f0b15acc54c', 'Test', 'test-preview@gmail.com', '$2a$04$x1jU9wX5Ab7fzyL.qG5CO.4CHB/t3lq0obSjdXkJ5.tmlwjVJZyRO', TRUE, NULL),
+('e15f64ec-d87e-4bc3-8680-3fb7b47d438d', 'Line User Test', NULL, NULL, FALSE, 'aaaaaaaaaaaaaaaaaaaa');
 
 -- INSERT INTO "pet" (name, description, lat, lng)
 -- VALUES
