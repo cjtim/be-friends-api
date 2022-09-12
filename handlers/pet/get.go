@@ -20,11 +20,11 @@ import (
 func PetList(c *fiber.Ctx) error {
 	userId := c.Query("user_id")
 	if userId != "" {
-		_, err := uuid.Parse(userId)
+		uid, err := uuid.Parse(userId)
 		if err != nil {
 			return err
 		}
-		pets, err := repository.PetRepo.List()
+		pets, err := repository.PetRepo.ListByUserId(uid)
 		if err != nil {
 			return err
 		}
