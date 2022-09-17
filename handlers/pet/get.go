@@ -3,6 +3,7 @@ package pet
 import (
 	"strconv"
 
+	"github.com/cjtim/be-friends-api/internal/auth"
 	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -30,7 +31,21 @@ func PetList(c *fiber.Ctx) error {
 		}
 		return c.JSON(pets)
 	}
+
+	// ALL
 	pets, err := repository.PetRepo.List()
+	if err != nil {
+		return err
+	}
+	return c.JSON(pets)
+}
+
+func PetMy(c *fiber.Ctx) error {
+	claims, err := auth.GetUserExtendedFromFiberCtx(c)
+	if err != nil {
+		return err
+	}
+	pets, err := repository.PetRepo.ListByUserId(claims.ID)
 	if err != nil {
 		return err
 	}
