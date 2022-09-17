@@ -234,7 +234,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.registerBody"
+                            "$ref": "#/definitions/repository.User"
                         }
                     }
                 ],
@@ -323,7 +323,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/repository.Pet"
+                            "$ref": "#/definitions/pet.CreateBody"
                         }
                     },
                     "400": {
@@ -552,20 +552,6 @@
                 }
             }
         },
-        "auth.registerBody": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
         "img.UploadResp": {
             "type": "object",
             "properties": {
@@ -585,8 +571,14 @@
         "pet.CreateBody": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "lat": {
                     "type": "number"
@@ -595,6 +587,21 @@
                     "type": "number"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "tag_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -620,7 +627,13 @@
                 "name": {
                     "type": "string"
                 },
+                "status": {
+                    "type": "string"
+                },
                 "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -629,6 +642,9 @@
             "type": "object",
             "properties": {
                 "created_at": {
+                    "type": "string"
+                },
+                "description": {
                     "type": "string"
                 },
                 "email": {
@@ -643,13 +659,22 @@
                 "is_org": {
                     "type": "boolean"
                 },
+                "lat": {
+                    "type": "number"
+                },
                 "line_uid": {
                     "type": "string"
+                },
+                "lng": {
+                    "type": "number"
                 },
                 "name": {
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 },
                 "picture_url": {

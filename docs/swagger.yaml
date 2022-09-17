@@ -53,15 +53,6 @@ definitions:
       password:
         type: string
     type: object
-  auth.registerBody:
-    properties:
-      email:
-        type: string
-      name:
-        type: string
-      password:
-        type: string
-    type: object
   img.UploadResp:
     properties:
       downloadURL:
@@ -74,13 +65,27 @@ definitions:
     type: object
   pet.CreateBody:
     properties:
+      created_at:
+        type: string
       description:
         type: string
+      id:
+        type: integer
       lat:
         type: number
       lng:
         type: number
       name:
+        type: string
+      status:
+        type: string
+      tag_ids:
+        items:
+          type: integer
+        type: array
+      updated_at:
+        type: string
+      user_id:
         type: string
     type: object
   repository.Pet:
@@ -97,12 +102,18 @@ definitions:
         type: number
       name:
         type: string
+      status:
+        type: string
       updated_at:
+        type: string
+      user_id:
         type: string
     type: object
   repository.User:
     properties:
       created_at:
+        type: string
+      description:
         type: string
       email:
         type: string
@@ -112,11 +123,17 @@ definitions:
         type: boolean
       is_org:
         type: boolean
+      lat:
+        type: number
       line_uid:
         type: string
+      lng:
+        type: number
       name:
         type: string
       password:
+        type: string
+      phone:
         type: string
       picture_url:
         type: string
@@ -275,7 +292,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/auth.registerBody'
+          $ref: '#/definitions/repository.User'
       produces:
       - application/json
       responses:
@@ -332,7 +349,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/repository.Pet'
+            $ref: '#/definitions/pet.CreateBody'
         "400":
           description: Bad Request
           schema:

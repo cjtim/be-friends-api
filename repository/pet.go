@@ -29,6 +29,7 @@ type PetWithPic struct {
 	PictureURLs json.RawMessage `json:"picture_urls" db:"picture_urls"`
 	Liked       json.RawMessage `json:"liked" db:"liked"`
 	Interested  json.RawMessage `json:"interested" db:"interested"`
+	Tags        json.RawMessage `json:"tags" db:"tags"`
 }
 
 func (p *PetImpl) List() (pets []PetWithPic, err error) {
@@ -58,7 +59,17 @@ func (p *PetImpl) List() (pets []PetWithPic, err error) {
 				FROM "interested" itrt
 				WHERE itrt.pet_id = p.id
 			) itrt
-		) AS interested
+		) AS interested,
+		(
+			SELECT COALESCE(json_agg(tags), '[]')
+			FROM (
+				SELECT t.*
+				FROM "tag_pet" tp
+				JOIN "tag" t
+				ON t.id = tp.tag_id
+				WHERE tp.pet_id = p.id
+			) tags
+		) AS tags
 	FROM pet p
 	`
 	err = DB.Select(&pets, stm)
@@ -92,7 +103,17 @@ func (p *PetImpl) ListByUserId(userId uuid.UUID) (pets []PetWithPic, err error) 
 				FROM "interested" itrt
 				WHERE itrt.pet_id = p.id
 			) itrt
-		) AS interested
+		) AS interested,
+		(
+			SELECT COALESCE(json_agg(tags), '[]')
+			FROM (
+				SELECT t.*
+				FROM "tag_pet" tp
+				JOIN "tag" t
+				ON t.id = tp.tag_id
+				WHERE tp.pet_id = p.id
+			) tags
+		) AS tags
 	FROM pet p
 	WHERE p.user_id = $1
 	`
@@ -127,7 +148,17 @@ func (p *PetImpl) GetById(id int) (pet PetWithPic, err error) {
 				FROM "interested" itrt
 				WHERE itrt.pet_id = p.id
 			) itrt
-		) AS interested
+		) AS interested,
+		(
+			SELECT COALESCE(json_agg(tags), '[]')
+			FROM (
+				SELECT t.*
+				FROM "tag_pet" tp
+				JOIN "tag" t
+				ON t.id = tp.tag_id
+				WHERE tp.pet_id = p.id
+			) tags
+		) AS tags
 	FROM pet p
 	WHERE id = $1
 	`

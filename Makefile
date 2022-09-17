@@ -20,17 +20,17 @@ start-db:
 	-e POSTGRES_PASSWORD=postgres \
 	-e POSTGRES_DB=be-friends \
 	-v $(PWD)/tools/db:/docker-entrypoint-initdb.d \
-	postgres:14.3-alpine && sleep 3 || true
+	postgres:14.3-alpine && sleep 5 || true
 
 run: start-redis start-db
 	REDIS_URL=localhost:$(REDIS_PORT) \
 	DATABASE_URL=$(DATABASE_URL) \
-	LINE_CLIENT_ID=$(LINE_CLIENT_ID) \
-	LINE_SECRET_ID=$(LINE_SECRET_ID) \
-	BACKET_NAME=$(BACKET_NAME) \
-	GCLOUD_CREDENTIAL=$(GCLOUD_CREDENTIAL) \
 	go run main.go 
 
 clean:
 	docker rm -f $(REDIS_CONTAINER) || true
 	docker rm -f $(POSTGRES_CONTAINER) || true
+
+swag:
+	go install github.com/swaggo/swag/cmd/swag@v1.8.4
+	swag init --parseDependency

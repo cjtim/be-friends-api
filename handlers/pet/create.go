@@ -6,6 +6,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type CreateBody struct {
+	repository.Pet
+	TagIds []int `json:"tag_ids"`
+}
+
 // PetCreate - Create pet
 // @Summary		 Create pet
 // @Description  Create pet
@@ -14,12 +19,12 @@ import (
 // @accept 		 json
 // @Security 	Bearer
 // @Param		 body 	body	 	pet.CreateBody			true	"Pet details"
-// @Success      200  	{object}  	repository.Pet
+// @Success      200  	{object}  	pet.CreateBody
 // @Failure      400  	{string}  	string
 // @Failure      500  	{string}  	string
 // @Router       /api/v1/pet [post]
 func PetCreate(c *fiber.Ctx) error {
-	body := repository.Pet{}
+	body := CreateBody{}
 	err := c.BodyParser(&body)
 	if err != nil {
 		return err
@@ -37,9 +42,13 @@ func PetCreate(c *fiber.Ctx) error {
 		Status:      repository.NEW,
 		UserID:      claims.ID,
 	})
-
 	if err != nil {
 		return err
+	}
+
+	// Add tag
+	for _, v := range body.TagIds {
+		_ = repository.TagPetRepo.Add(pet.ID, v)
 	}
 	return c.Status(fiber.StatusCreated).JSON(&pet)
 }

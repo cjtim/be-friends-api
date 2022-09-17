@@ -243,7 +243,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.registerBody"
+                            "$ref": "#/definitions/repository.User"
                         }
                     }
                 ],
@@ -332,7 +332,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/repository.Pet"
+                            "$ref": "#/definitions/pet.CreateBody"
                         }
                     },
                     "400": {
@@ -561,20 +561,6 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.registerBody": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
         "img.UploadResp": {
             "type": "object",
             "properties": {
@@ -594,8 +580,14 @@ const docTemplate = `{
         "pet.CreateBody": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "lat": {
                     "type": "number"
@@ -604,6 +596,21 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "tag_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -629,7 +636,13 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "status": {
+                    "type": "string"
+                },
                 "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -638,6 +651,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "created_at": {
+                    "type": "string"
+                },
+                "description": {
                     "type": "string"
                 },
                 "email": {
@@ -652,13 +668,22 @@ const docTemplate = `{
                 "is_org": {
                     "type": "boolean"
                 },
+                "lat": {
+                    "type": "number"
+                },
                 "line_uid": {
                     "type": "string"
+                },
+                "lng": {
+                    "type": "number"
                 },
                 "name": {
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 },
                 "picture_url": {
