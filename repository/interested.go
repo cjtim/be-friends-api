@@ -26,7 +26,7 @@ func (i *InterestedImpl) Add(petID int, userID uuid.UUID) error {
 }
 
 func (i *InterestedImpl) Remove(petID int, userID uuid.UUID) error {
-	stm := `DELETE "interested" WHERE pet_id = $1, user_id = $2`
+	stm := `DELETE FROM "interested" WHERE pet_id = $1 AND user_id = $2`
 	_, err := DB.Exec(stm, petID, userID)
 	return err
 }

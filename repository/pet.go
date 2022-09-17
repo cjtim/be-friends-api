@@ -27,6 +27,8 @@ type Pet struct {
 type PetWithPic struct {
 	Pet
 	PictureURLs json.RawMessage `json:"picture_urls" db:"picture_urls"`
+	Liked       json.RawMessage `json:"liked" db:"liked"`
+	Interested  json.RawMessage `json:"interested" db:"interested"`
 }
 
 func (p *PetImpl) List() (pets []PetWithPic, err error) {
@@ -40,7 +42,23 @@ func (p *PetImpl) List() (pets []PetWithPic, err error) {
 				FROM "pic_pet" pp
 				WHERE pp.pet_id = p.id
 			) pic
-		) AS picture_urls
+		) AS picture_urls,
+		(
+			SELECT COALESCE(json_agg(user_id), '[]')
+			FROM (
+				SELECT user_id
+				FROM "liked" lk
+				WHERE lk.pet_id = p.id
+			) liked
+		) AS liked,
+		(
+			SELECT COALESCE(json_agg(user_id), '[]')
+			FROM (
+				SELECT user_id
+				FROM "interested" itrt
+				WHERE itrt.pet_id = p.id
+			) itrt
+		) AS interested
 	FROM pet p
 	`
 	err = DB.Select(&pets, stm)
@@ -58,7 +76,23 @@ func (p *PetImpl) ListByUserId(userId uuid.UUID) (pets []PetWithPic, err error) 
 				FROM "pic_pet" pp
 				WHERE pp.pet_id = p.id
 			) pic
-		) AS picture_urls
+		) AS picture_urls,
+		(
+			SELECT COALESCE(json_agg(user_id), '[]')
+			FROM (
+				SELECT user_id
+				FROM "liked" lk
+				WHERE lk.pet_id = p.id
+			) liked
+		) AS liked,
+		(
+			SELECT COALESCE(json_agg(user_id), '[]')
+			FROM (
+				SELECT user_id
+				FROM "interested" itrt
+				WHERE itrt.pet_id = p.id
+			) itrt
+		) AS interested
 	FROM pet p
 	WHERE p.user_id = $1
 	`
@@ -77,7 +111,23 @@ func (p *PetImpl) GetById(id int) (pet PetWithPic, err error) {
 				FROM "pic_pet" pp
 				WHERE pp.pet_id = p.id
 			) pic
-		) AS picture_urls
+		) AS picture_urls,
+		(
+			SELECT COALESCE(json_agg(user_id), '[]')
+			FROM (
+				SELECT user_id
+				FROM "liked" lk
+				WHERE lk.pet_id = p.id
+			) liked
+		) AS liked,
+		(
+			SELECT COALESCE(json_agg(user_id), '[]')
+			FROM (
+				SELECT user_id
+				FROM "interested" itrt
+				WHERE itrt.pet_id = p.id
+			) itrt
+		) AS interested
 	FROM pet p
 	WHERE id = $1
 	`
