@@ -22,3 +22,9 @@ func (p *PetPicImpl) Add(PetID int, urls []string) error {
 	_, err := DB.NamedExec(stm, data)
 	return err
 }
+
+func (p *PetPicImpl) DeleteAll(petID int) error {
+	stm := `DELETE FROM "pic_pet" WHERE pet_id = $1`
+	_, err := DB.Exec(stm, petID)
+	return err
+}

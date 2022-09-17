@@ -178,7 +178,7 @@ func (p *PetImpl) Create(pet Pet) (Pet, error) {
 
 func (p *PetImpl) Update(pet Pet) error {
 	stm := `
-		UPDATE "tag" 
+		UPDATE "pet" 
 		SET 
 			name = :name, 
 			description = :description,

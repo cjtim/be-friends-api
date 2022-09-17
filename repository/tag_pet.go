@@ -12,3 +12,9 @@ func (i *TagPetImpl) Add(petID int, tagID int) error {
 	_, err := DB.Exec(stm, petID, tagID)
 	return err
 }
+
+func (p *TagPetImpl) DeleteAll(petID int) error {
+	stm := `DELETE FROM "tag_pet" WHERE pet_id = $1`
+	_, err := DB.Exec(stm, petID)
+	return err
+}
