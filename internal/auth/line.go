@@ -88,6 +88,7 @@ func GetLoginURL(clientURL string) string {
 	q.Add("response_type", "code")
 	q.Add("redirect_uri", configs.Config.LineLoginCallback)
 	q.Add("client_id", configs.Config.LineClientID)
+	q.Add("bot_prompt", "aggressive")
 	url.URL.RawQuery = q.Encode()
 	return url.URL.String()
 }
