@@ -16,7 +16,8 @@ import (
 // @Failure      500  {string}  string
 // @Router       /api/v1/shelter [get]
 func GetShelters(c *fiber.Ctx) error {
-	orgs, err := repository.UserRepo.GetOrganizations()
+	includeUser := c.Query("include_user", "")
+	orgs, err := repository.UserRepo.GetOrganizations(includeUser)
 	if err != nil {
 		return err
 	}
@@ -43,7 +44,7 @@ func GetShelterById(c *fiber.Ctx) error {
 		return err
 	}
 
-	org, err := repository.UserRepo.GetOrganizationById(id)
+	org, err := repository.UserRepo.GetUser(id)
 	if err != nil {
 		return err
 	}

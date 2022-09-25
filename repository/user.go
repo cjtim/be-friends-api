@@ -35,15 +35,13 @@ func (t *UserImpl) GetUser(userId uuid.UUID) (user User, err error) {
 	return user, err
 }
 
-func (t *UserImpl) GetOrganizations() (users []User, err error) {
-	stm := `SELECT u.id, u.name, u.email, u.picture_url, u.is_admin, u.is_org, u.created_at, u.updated_at FROM "user" u WHERE u.is_org = TRUE`
-	err = DB.Select(&users, stm)
-	return users, err
-}
-
-func (t *UserImpl) GetOrganizationById(id uuid.UUID) (users User, err error) {
-	stm := `SELECT u.id, u.name, u.email, u.picture_url, u.is_admin, u.is_org, u.created_at, u.updated_at FROM "user" u WHERE u.is_org = TRUE AND u.id =$1`
-	err = DB.Get(&users, stm, id)
+func (t *UserImpl) GetOrganizations(includeUser string) (users []User, err error) {
+	baseStm := `SELECT u.id, u.name, u.email, u.line_uid, u.description, u.picture_url, u.phone, u.is_admin, u.is_org, u.lat, u.lng, u.created_at, u.updated_at FROM "user" u`
+	if includeUser != "" {
+		err = DB.Select(&users, baseStm)
+		return users, err
+	}
+	err = DB.Select(&users, baseStm+" WHERE u.is_org = TRUE")
 	return users, err
 }
 

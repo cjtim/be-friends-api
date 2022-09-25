@@ -2,6 +2,7 @@ package auth
 
 import (
 	"github.com/cjtim/be-friends-api/internal/auth"
+	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -11,7 +12,7 @@ import (
 // @Tags         auth
 // @Produce      json
 // @Security 	Bearer
-// @Success      200  {object}  auth.CustomClaims
+// @Success      200  {object}  repository.User
 // @Failure      400  {string}  string
 // @Failure      500  {string}  string
 // @Router       /api/v1/auth/me [get]
@@ -20,5 +21,9 @@ func Me(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return c.JSON(claims)
+	user, err := repository.UserRepo.GetUser(claims.ID)
+	if err != nil {
+		return err
+	}
+	return c.JSON(user)
 }
