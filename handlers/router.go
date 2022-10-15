@@ -88,5 +88,6 @@ func Route(r *fiber.App) {
 		interestRoute.Get("", interest.List)
 		interestRoute.Post("/:pet_id", interest.Add)
 		interestRoute.Delete("/:pet_id", interest.Remove)
+		interestRoute.Put("/:pet_id", interest.UpdateStep)
 	}
 }

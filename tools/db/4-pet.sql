@@ -80,6 +80,7 @@ CREATE TABLE "pic_pet" (
 CREATE TABLE "interested" (
     pet_id SERIAL NOT NULL,
     user_id uuid NOT NULL,
+    step VARCHAR(255) DEFAULT 'PENDING' NOT NULL,
 
     CONSTRAINT "PK_interested" PRIMARY KEY (pet_id, user_id),
     CONSTRAINT "FK_interested__pet" FOREIGN KEY (pet_id) REFERENCES "pet" ("id"),
