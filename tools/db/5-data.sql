@@ -5,15 +5,15 @@ VALUES ('new'), ('pending'), ('adoped');
 -- Test credential
 -- test-preview@gmail.com
 -- test
-INSERT INTO "user" (id, name, email, password, is_org, line_uid)
+INSERT INTO "user" (id, name, email, password, is_org, line_uid, phone)
 VALUES 
-('097b2b93-0a66-4de2-a5a6-4f0b15acc54c', 'Test', 'test-preview@gmail.com', '$2a$04$x1jU9wX5Ab7fzyL.qG5CO.4CHB/t3lq0obSjdXkJ5.tmlwjVJZyRO', TRUE, NULL),
-('e15f64ec-d87e-4bc3-8680-3fb7b47d438d', 'Line User Test', NULL, NULL, FALSE, 'aaaaaaaaaaaaaaaaaaaa');
+('097b2b93-0a66-4de2-a5a6-4f0b15acc54c', 'สถานสงเคราะห์สัตว์อุ่นไอรัก', 'test-preview@gmail.com', '$2a$04$x1jU9wX5Ab7fzyL.qG5CO.4CHB/t3lq0obSjdXkJ5.tmlwjVJZyRO', TRUE, NULL, '026009876'),
+('e15f64ec-d87e-4bc3-8680-3fb7b47d438d', 'Line User Test', NULL, NULL, FALSE, 'aaaaaaaaaaaaaaaaaaaa', NULL);
 
 INSERT INTO "pet" (name, description, lat, lng, user_id, status)
 VALUES
-('Sam', 'Sam is friendly dog', 53.1, 64, '097b2b93-0a66-4de2-a5a6-4f0b15acc54c', 'new'),
-('John', 'Johnny is friendly cat', 55, 60, '097b2b93-0a66-4de2-a5a6-4f0b15acc54c', 'new'),
+('Sam', 'แชม ไม่ทราบอายุ', 53.1, 64, '097b2b93-0a66-4de2-a5a6-4f0b15acc54c', 'new'),
+('John', 'จอห์น อายุ2ปี เป็นสุนัขขี้เล่น ร่าเริง', 55, 60, '097b2b93-0a66-4de2-a5a6-4f0b15acc54c', 'new'),
 ('James', NULL, 56, 57, 'e15f64ec-d87e-4bc3-8680-3fb7b47d438d', 'new');
 
 INSERT INTO "pic_pet" (pet_id, picture_url)
@@ -36,4 +36,4 @@ VALUES
 
 INSERT INTO "tag_pet" (pet_id, tag_id)
 VALUES
-(1, 1), (1, 2), (1, 3), (2, 1), (2, 3), (2, 4);
+(1, 1), (1, 2), (2, 1), (2, 3), (2, 4);
