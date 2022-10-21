@@ -19,6 +19,7 @@ import (
 // @Failure      500  {string}  string
 // @Router       /api/v1/pet [get]
 func PetList(c *fiber.Ctx) error {
+	// Shelter detail able to fetch pet list by user_id
 	userId := c.Query("user_id")
 	if userId != "" {
 		uid, err := uuid.Parse(userId)
@@ -32,7 +33,7 @@ func PetList(c *fiber.Ctx) error {
 		return c.JSON(pets)
 	}
 
-	// ALL
+	// Find pet page
 	pets, err := repository.PetRepo.List()
 	if err != nil {
 		return err

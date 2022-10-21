@@ -4,9 +4,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cjtim/be-friends-api/internal/auth"
 	"github.com/cjtim/be-friends-api/repository"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 func UpdateStep(c *fiber.Ctx) error {
@@ -18,13 +18,14 @@ func UpdateStep(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	claims, err := auth.GetUserExtendedFromFiberCtx(c)
+
+	userId, err := uuid.Parse(c.Query("user_id"))
 	if err != nil {
 		return err
 	}
 	step := strings.ToUpper(c.Query("step", "REVIEWING"))
 
-	err = repository.InterestedRepo.UpdateStep(id, claims.ID, step)
+	err = repository.InterestedRepo.UpdateStep(id, userId, step)
 	if err != nil {
 		return err
 	}
