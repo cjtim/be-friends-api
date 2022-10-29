@@ -1,5 +1,5 @@
 INSERT INTO "status" (name)
-VALUES ('new'), ('pending'), ('adoped');
+VALUES ('NEW'), ('กำลังตรวจสอบข้อมูล'), ('เสร็จสิ้น');
 
 
 -- Test credential
@@ -12,9 +12,9 @@ VALUES
 
 INSERT INTO "pet" (name, description, lat, lng, user_id, status)
 VALUES
-('Sam', 'แชม ไม่ทราบอายุ', 53.1, 64, '097b2b93-0a66-4de2-a5a6-4f0b15acc54c', 'new'),
-('John', 'จอห์น อายุ2ปี เป็นสุนัขขี้เล่น ร่าเริง', 55, 60, '097b2b93-0a66-4de2-a5a6-4f0b15acc54c', 'new'),
-('James', NULL, 56, 57, 'e15f64ec-d87e-4bc3-8680-3fb7b47d438d', 'new');
+('Sam', 'แชม ไม่ทราบอายุ', 53.1, 64, '097b2b93-0a66-4de2-a5a6-4f0b15acc54c', 'NEW'),
+('John', 'จอห์น อายุ2ปี เป็นสุนัขขี้เล่น ร่าเริง', 55, 60, '097b2b93-0a66-4de2-a5a6-4f0b15acc54c', 'NEW'),
+('James', NULL, 56, 57, 'e15f64ec-d87e-4bc3-8680-3fb7b47d438d', 'NEW');
 
 INSERT INTO "pic_pet" (pet_id, picture_url)
 VALUES
@@ -29,10 +29,7 @@ VALUES
 ('Friendly', FALSE),
 ('Girl', FALSE),
 ('Boy', FALSE),
-('Need attention', TRUE),
-('Line User', TRUE),
-('From campaign', TRUE),
-('Admin', TRUE);
+('Need attention', TRUE);
 
 INSERT INTO "tag_pet" (pet_id, tag_id)
 VALUES

@@ -10,6 +10,17 @@ type Interested struct {
 	Step   string    `json:"step" db:"step"`
 }
 
+type InterestStep string
+
+var (
+	PENDING      InterestStep = "ได้รับข้อมูลแล้ว"
+	SCREENING    InterestStep = "กำลังตรวจสอบข้อมูล และติดต่อกลับ"
+	CONFIRMATION InterestStep = "ยืนยันรับอุปการะ"
+
+	FAILED   InterestStep = "คุณสมบัติไม่ผ่าน"
+	PICKEDUP InterestStep = "เสร็จสิ้นการอุปการะ"
+)
+
 type InterestedPet struct {
 	Interested
 	Pet

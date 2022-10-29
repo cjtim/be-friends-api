@@ -3,7 +3,7 @@ package repository
 type Status string
 
 var (
-	NEW     Status = "new"
-	PENDING Status = "pending"
-	ADOPED  Status = "adoped"
+	NEW       Status = "NEW"
+	REVIEWING Status = "กำลังตรวจสอบข้อมูล"
+	ADOPED    Status = "เสร็จสิ้น"
 )
