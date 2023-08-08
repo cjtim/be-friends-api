@@ -17,7 +17,7 @@ ARG CGO_ENABLED=0
 RUN go build -o main main.go
 
 # Production container
-FROM alpine:latest  
+FROM alpine:3.18.3  
 RUN apk update && \
     apk add --no-cache \
     ca-certificates \
